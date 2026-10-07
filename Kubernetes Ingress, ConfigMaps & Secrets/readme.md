@@ -8,7 +8,7 @@ I deployed a demo application using a ConfigMap, Secret, frontend Deployment, ba
 
 ```text
 manifests/configmap.yaml
-manifests/secret.yaml
+manifests/secret.example.yaml
 manifests/frontend.yaml
 manifests/backend.yaml
 manifests/ingress.yaml
@@ -26,7 +26,8 @@ kubectl wait --namespace ingress-nginx --for=condition=Ready pod --selector=app.
 Run these commands from the `manifests` folder:
 
 ```bash
-kubectl apply -f configmap.yaml -f secret.yaml -f frontend.yaml -f backend.yaml -f ingress.yaml
+kubectl create secret generic yatri-db-secret --from-literal=POSTGRES_USER=demo --from-literal=POSTGRES_PASSWORD=demo --from-literal=POSTGRES_DB=yatri
+kubectl apply -f configmap.yaml -f frontend.yaml -f backend.yaml -f ingress.yaml
 kubectl rollout status deployment/yatri-frontend --timeout=120s
 kubectl rollout status deployment/yatri-backend --timeout=120s
 kubectl get configmap yatri-app-config

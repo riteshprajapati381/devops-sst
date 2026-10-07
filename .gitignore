@@ -9,3 +9,5 @@ node_modules/
 *.tfvars
 !*.tfvars.example
 .playwright-cli/
+.coverage
+.pytest_cache/
