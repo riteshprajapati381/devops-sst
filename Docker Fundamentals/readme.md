@@ -44,33 +44,33 @@ docker run --rm -p 8083:80 hello-nginx
 
 All applications display Hello World on the browser.
 
-## Captured evidence
+## Screenshots
 
-![Apache app browser](output/playwright/Apache-app-browser.png)
+![Apache app browser](output/screenshots/Apache-app-browser.png)
 
-![Apache app terminal](output/playwright/Apache-app-terminal.png)
+![Apache app terminal](output/screenshots/Apache-app-terminal.png)
 
-![React app browser](output/playwright/React-app-browser.png)
+![React app browser](output/screenshots/React-app-browser.png)
 
-![React app terminal](output/playwright/React-app-terminal.png)
+![React app terminal](output/screenshots/React-app-terminal.png)
 
-![Java app browser](output/playwright/java-app-browser.png)
+![Java app browser](output/screenshots/java-app-browser.png)
 
-![Java app terminal](output/playwright/java-app-terminal.png)
+![Java app terminal](output/screenshots/java-app-terminal.png)
 
-![Nginx app browser](output/playwright/nginx-app-browser.png)
+![Nginx app browser](output/screenshots/nginx-app-browser.png)
 
-![Nginx app terminal](output/playwright/nginx-app-terminal.png)
+![Nginx app terminal](output/screenshots/nginx-app-terminal.png)
 
-![Nodejs app browser](output/playwright/nodejs-app-browser.png)
+![Nodejs app browser](output/screenshots/nodejs-app-browser.png)
 
-![Nodejs app terminal](output/playwright/nodejs-app-terminal.png)
+![Nodejs app terminal](output/screenshots/nodejs-app-terminal.png)
 
-![Python app browser](output/playwright/python-app-browser.png)
+![Python app browser](output/screenshots/python-app-browser.png)
 
-![Python app terminal](output/playwright/python-app-terminal.png)
+![Python app terminal](output/screenshots/python-app-terminal.png)
 
-### Actual command output
+## Command output
 
 - [Apache app](output/logs/Apache-app.log)
 - [React app](output/logs/React-app.log)

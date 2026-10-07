@@ -1,9 +1,8 @@
 # Docker Networking
 
-## Task 1
+## Three networks
 
-Created frontend, backend and database containers using three networks.
-Backend is connected to frontend-net and backend-net.
+Frontend uses `frontend-net`; backend uses `frontend-net` and `backend-net`; MySQL uses `backend-net` and `isolated-net`. Frontend can reach backend, and backend can reach MySQL. Frontend cannot reach MySQL directly.
 
 ```bash
 docker compose up -d
@@ -14,20 +13,17 @@ docker exec homework-backend ping -c 2 database
 docker compose down
 ```
 
-## Task 2
-
-Apache container using host network:
+## Host network
 
 ```bash
-docker pull httpd:2.4-alpine
 docker run -d --name homework-apache --network host httpd:2.4-alpine
 curl http://localhost:80
 docker rm -f homework-apache
 ```
 
-## Task 3
+Result: Apache served a page through the host network.
 
-Nginx container using bind mount:
+## Bind mount
 
 ```bash
 docker run -d --name homework-bind -p 8080:80 \
@@ -36,32 +32,28 @@ docker run -d --name homework-bind -p 8080:80 \
 curl http://localhost:8080
 ```
 
-Changes made in index.html are shown without restarting the container.
+Result: editing `index.html` changed the page without restarting the container.
 
-## Task 4
+## Overlay network
 
-Overlay network connects containers running on different Docker hosts.
-It is mainly used with Docker Swarm for multi-host communication.
+Overlay networks connect containers across Docker hosts using VXLAN. Swarm manages nodes and service discovery. Required ports are TCP 2377, TCP/UDP 7946 and UDP 4789.
+
+Example commands for a Swarm manager:
 
 ```bash
+docker swarm init
 docker network create --driver overlay --attachable app-overlay
 ```
 
-## Network isolation and overlay notes
+The multi-host overlay portion is research; the container exercises used bridge and host networks.
 
-The frontend joins frontend-net. The backend joins frontend-net and backend-net. MySQL joins backend-net and isolated-net. The frontend can reach the backend, the backend can reach MySQL, and the frontend cannot resolve or reach MySQL because they share no network. Docker's embedded DNS provides service/container name lookup within shared user-defined networks.
+## Screenshots
 
-An overlay network uses VXLAN to carry container traffic between hosts. Swarm manages membership and service discovery; standalone containers require an attachable overlay. Hosts need TCP 2377 for Swarm control, TCP/UDP 7946 for node discovery and UDP 4789 for overlay data traffic. An encrypted overlay can protect data-plane traffic with IPsec, at a performance cost. This is useful for distributed services across multiple machines; the homework's multi-host overlay portion is research, so no multi-host execution is claimed.
+![Network volume browser](output/screenshots/network-volume-browser.png)
 
-Run `docker swarm init` on a manager before creating a Swarm overlay; join other nodes using the generated join command. The live three-network exercise here uses local bridge networks.
+![Network volume](output/screenshots/network-volume.png)
 
-## Captured evidence
-
-![Network volume browser](output/playwright/network-volume-browser.png)
-
-![Network volume](output/playwright/network-volume.png)
-
-### Actual command output
+## Command output
 
 - [network volume first attempt](output/logs/network-volume-first-attempt.log)
 - [network volume](output/logs/network-volume.log)

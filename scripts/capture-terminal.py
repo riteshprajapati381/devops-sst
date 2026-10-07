@@ -3,7 +3,7 @@ import pathlib, subprocess, sys, time, re
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 PW='/Users/riteshprajapati/.codex/skills/playwright/scripts/playwright_cli.sh'
 folder, name, command=sys.argv[1:4]
-path=ROOT/folder/'output/playwright'; path.mkdir(parents=True,exist_ok=True)
+path=ROOT/folder/'output/screenshots'; path.mkdir(parents=True,exist_ok=True)
 def pw(*args): return subprocess.run([PW,'--session','devops',*args],check=True,capture_output=True,text=True)
 marker='EVIDENCE_DONE_'+name
 pw('type','clear; set -o pipefail; '+command+'; echo '+marker+':$?')

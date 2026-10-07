@@ -1,88 +1,44 @@
 # Kubernetes Networking & Services
 
-## Task
+## Service types
 
-I practiced Kubernetes service networking using ClusterIP, NodePort, LoadBalancer, ExternalName, and Headless Service.
-
-## Files
-
-```text
-manifests/01-clusterip/
-manifests/02-nodeport/
-manifests/03-loadbalancer/
-manifests/04-externalname/
-manifests/05-headless/
-```
-
-## Commands I ran
-
-Run these commands from this assignment folder:
+| Service | Use |
+|---|---|
+| ClusterIP | Internal access through a stable IP |
+| NodePort | Access through a port on the node |
+| LoadBalancer | External access using a load balancer |
+| ExternalName | DNS alias to an external hostname |
+| Headless | Returns Pod endpoint addresses |
 
 ```bash
 kubectl apply -f manifests/01-clusterip
-kubectl rollout status deployment/web-app-clusterip --timeout=120s
-kubectl wait --for=condition=Ready pod/curl-client --timeout=120s
-kubectl get pods -l app=web-clusterip -o wide
-kubectl get svc web-service-clusterip
-kubectl get endpoints web-service-clusterip
-kubectl exec curl-client -- curl -s http://web-service-clusterip:8080
-
 kubectl apply -f manifests/02-nodeport
 kubectl apply -f manifests/03-loadbalancer
 kubectl apply -f manifests/04-externalname
 kubectl apply -f manifests/05-headless
-kubectl get svc
+kubectl get services
+kubectl get endpoints web-service-clusterip
+kubectl exec curl-client -- curl -s http://web-service-clusterip:8080
 kubectl exec dns-test-client -- nslookup external-database-service
 kubectl exec headless-dns-client -- nslookup web-service-headless
-kubectl port-forward service/web-service-clusterip 18081:8080 --address 127.0.0.1
 ```
 
-## Output
+Result: ClusterIP requests and DNS checks passed on the kind cluster. LoadBalancer stayed pending because no external load balancer was configured.
 
-```text
-NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-web-service-clusterip   ClusterIP   10.96.240.159   <none>        8080/TCP   1s
+## Kubernetes objects
 
-NAME                    ENDPOINTS                                      AGE
-web-service-clusterip   10.244.0.12:80,10.244.0.14:80,10.244.0.15:80   1s
-
-NAME                        TYPE           CLUSTER-IP      EXTERNAL-IP        PORT(S)        AGE
-web-service-nodeport        NodePort       10.96.154.139   <none>             80:30081/TCP   0s
-web-service-clusterip       ClusterIP      10.96.240.159   <none>             8080/TCP       49s
-web-service-loadbalancer    LoadBalancer   10.96.50.192    <pending>          80:30255/TCP   14s
-external-database-service   ExternalName   <none>          nencyravaliya.me   <none>         14s
-web-service-headless        ClusterIP      None            <none>             80/TCP         14s
-
-external-database-service.default.svc.cluster.local canonical name = nencyravaliya.me
-
-Name: web-service-headless.default.svc.cluster.local
-Address: 10.244.0.24
-Name: web-service-headless.default.svc.cluster.local
-Address: 10.244.0.23
-Name: web-service-headless.default.svc.cluster.local
-Address: 10.244.0.25
-```
-
-`LoadBalancer` showed `<pending>` because I tested this on a local `kind` cluster.
-
-## Screenshot
-
-![ClusterIP service running through port-forward](image/readme/clusterip-service.png)
-
-## What I understood
-
-Services give pods stable networking. ClusterIP is internal, NodePort exposes a node port, LoadBalancer is used in cloud setups, ExternalName maps to DNS, and Headless Service returns pod IPs.
-
-## Kubernetes object comparisons
-
-| Object | Responsibility and use case | Scaling, identity and storage |
+| Object | Purpose | Scaling, identity and storage |
 |---|---|---|
-| Deployment | Manages ReplicaSets and rolling updates for stateless applications. | Desired replica count; interchangeable Pods, typically using Services and external/shared storage. |
-| ReplicaSet | Maintains the requested number of matching Pods. | Replica count only; a Deployment normally manages it and orchestrates version rollouts. |
-| DaemonSet | Runs an agent on each eligible node, such as a log collector. | Scales with eligible nodes, rather than a fixed replica count; often uses node-local storage. |
-| StatefulSet | Manages workloads needing stable identity and persistent storage. | Ordered Pod names; headless Service identity; individual PVCs from volumeClaimTemplates. |
-| Service | Provides discovery and stable networking to selected ready Pods. | Does not create, restart or scale Pods. A ReplicaSet keeps Pods alive; a Service routes traffic to them. |
+| Deployment | Stateless applications and rolling updates | Replica count; interchangeable Pods |
+| ReplicaSet | Maintains matching Pods | Replica count; usually managed by a Deployment |
+| DaemonSet | Node agents such as log collectors | One Pod per eligible node; often node-local storage |
+| StatefulSet | Stateful workloads | Stable Pod names and individual PVCs |
+| Service | Discovery and routing to ready Pods | Does not create or scale Pods |
 
-Deployment and ReplicaSet are related through ownership: Deployment -> ReplicaSet -> Pod. Service selectors connect Service traffic to Pod labels independently of that ownership.
+Deployment manages ReplicaSets, which manage Pods. Service selectors match Pod labels independently.
 
-See [FQDN](fqdn/README.md) and [CoreDNS](coredns/README.md) for the remaining research tasks.
+Research: [FQDN](fqdn/README.md) and [CoreDNS](coredns/README.md).
+
+![ClusterIP service](image/readme/clusterip-service.png)
+
+## Screenshots

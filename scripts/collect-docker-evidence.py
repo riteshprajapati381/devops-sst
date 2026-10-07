@@ -22,9 +22,9 @@ for app in ["nodejs-app", "python-app", "java-app", "Apache-app", "React-app", "
         time.sleep(3)
     else:
         raise RuntimeError(app + " build timed out")
-    pw("devops", "screenshot", "--filename", str(ROOT / "Docker Fundamentals/output/playwright" / (app + "-terminal.png")))
+    pw("devops", "screenshot", "--filename", str(ROOT / "Docker Fundamentals/output/screenshots" / (app + "-terminal.png")))
     pw("app", "goto", "http://127.0.0.1:18080")
     time.sleep(2)
-    pw("app", "screenshot", "--filename", str(ROOT / "Docker Fundamentals/output/playwright" / (app + "-browser.png")))
+    pw("app", "screenshot", "--filename", str(ROOT / "Docker Fundamentals/output/screenshots" / (app + "-browser.png")))
     print("CAPTURED", app, flush=True)
 print("All six Docker applications captured", flush=True)

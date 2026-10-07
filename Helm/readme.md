@@ -1,32 +1,30 @@
 # Helm
 
-## Execution environment
-
-Name: Ritesh Prajapati. Fresh evidence was collected on 7 October 2026 from Ubuntu host `devops-ritesh`, reached using `ssh dev.devops-ritesh.riteshprajapati.coder`. Terminal images are Playwright captures of a live browser terminal connected to that SSH host. Browser images show the actual remote services through SSH port forwarding.
-
-## Tasks and implementation
-
-`notes-chart/` packages the teacher's Notes application with Deployment, NodePort Service and ConfigMap templates. `values.yaml` sets development defaults; `values-prod.yaml` changes the image, environment and replica count. Helm tracks each install/upgrade as a release revision and rollback restores a previous revision.
-
-The workflow installs revision 1, upgrades to production values, upgrades again, and rolls back to revision 1. Rollback creates a new revision; it does not erase the earlier history. A chart is the package; a release is an installed instance of that chart.
-
-## Run
+A chart packages Kubernetes resources. A release is an installed chart. `notes-chart/` contains Deployment, Service and ConfigMap templates with development and production values.
 
 ```bash
-bash ~/devops-sst/scripts/session15.sh
-helm list -n helm-homework
+helm create sample-chart
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm search repo prometheus-community
+helm lint notes-chart
+helm install notes ./notes-chart -n helm-homework --create-namespace
+helm upgrade notes ./notes-chart -n helm-homework -f notes-chart/values-prod.yaml
+helm upgrade notes ./notes-chart -n helm-homework --set image.tag=1.27 --set replicaCount=2
 helm history notes -n helm-homework
 helm get values notes -n helm-homework
 helm get manifest notes -n helm-homework
+helm rollback notes 1 -n helm-homework
 helm status notes -n helm-homework
-# Cleanup after capturing the evidence:
 helm uninstall notes -n helm-homework
 ```
 
-## Captured evidence
+Result: install, two upgrades and rollback passed. Rollback restored revision 1's configuration and created revision 4. The release was uninstalled afterward.
 
-![Upgrade rollback](output/playwright/upgrade-rollback.png)
+## Screenshots
 
-### Actual command output
+![Upgrade rollback](output/screenshots/upgrade-rollback.png)
+
+## Command output
 
 - [helm](output/logs/helm.log)

@@ -1,10 +1,8 @@
-# Sessions 1–2: Linux fundamentals
+# Linux Fundamentals
 
-Name: Ritesh Prajapati. Fresh commands ran on the Ubuntu SSH host `devops-ritesh` on 7 October 2026. Run [session02-05.sh](../scripts/session02-05.sh) to reproduce the combined Linux, shell, networking and Git exercise.
+## Hard and soft links
 
-## Soft and hard links
-
-A hard link is another directory entry for the same inode: both names refer to the same data. Removing one name leaves the other usable. Hard links cannot cross filesystems and ordinary users cannot hard-link directories. A soft link stores a target path and can cross filesystems or refer to directories. Deleting its target leaves a dangling link.
+A hard link shares the original file's inode and still works after the original filename is deleted. A soft link points to a path and breaks when its target is deleted.
 
 ```bash
 echo 'Linux link exercise' > original.txt
@@ -13,14 +11,12 @@ ln -s original.txt soft-link.txt
 ls -li original.txt hard-link.txt soft-link.txt
 rm original.txt
 cat hard-link.txt
-cat soft-link.txt # expected missing-target error
+cat soft-link.txt
 ```
 
-The fresh run showed matching inode numbers for the original and hard link. After deleting the original, the hard link still printed the content and the soft link failed.
+## User creation
 
-## adduser and useradd
-
-On Ubuntu, `adduser` is a convenient higher-level wrapper that sets up a home directory and asks for account details. `useradd` is a lower-level utility whose options explicitly control the home directory, shell and other settings. It is not necessary to run a separate command for each field; for example, `useradd -m -s /bin/bash name` sets both in one command.
+`adduser` sets up a user interactively. `useradd` uses options such as `-m` for a home directory and `-s` for the shell.
 
 ```bash
 sudo adduser --disabled-password --gecos 'DevOps homework test user' devops-student
@@ -28,46 +24,31 @@ id devops-student
 getent passwd devops-student
 ```
 
-The test user was created successfully. `--disabled-password` avoids creating a password for this classroom account.
+## Logs and basic commands
 
-## System and service logs
-
-`journalctl` reads the systemd journal. `-u` selects a service, `-n` limits recent entries, `-b` selects the current boot, and `-f` follows new entries.
+`journalctl` reads systemd logs. `-u` selects a service, `-n` limits entries and `-f` follows new logs.
 
 ```bash
 sudo journalctl -u docker -n 10 --no-pager
-journalctl -b
-journalctl -u docker -f
 ```
-
-The recorded command reads actual Docker service startup logs.
-
-## Command practice
 
 | Command | Purpose |
 |---|---|
-| whoami / hostname / pwd | Identify the user, host and working directory. |
-| ls -la / ls -li | Inspect directory entries, permissions and inode numbers. |
-| cat | Read file content. |
-| mkdir / touch | Create a directory or file. |
-| df -h / free -h | Check filesystem capacity and memory. |
-| ps -ef | Inspect running processes. |
-| ln / ln -s / rm | Create links and remove names. |
+| whoami, hostname, pwd | Show user, host and current directory |
+| ls -la, ls -li | Show files, permissions and inodes |
+| mkdir, touch | Create directories and files |
+| cat, rm | Read or remove files |
+| df -h, free -h | Check disk and memory |
+| ps -ef | List processes |
 
-## Earlier evidence retained
+Result: link behavior verified, test user created and Docker logs checked.
 
-![Earlier link exercise](image/readme/1788375912740.png)
+## Screenshots
 
-![Earlier user creation](image/readme/2026-09-03_00-41-50.png)
+![Linux links user](output/screenshots/linux-links-user.png)
 
-![Earlier journal exercise](image/readme/1788377534309.png)
+![Linux system logs](output/screenshots/linux-system-logs.png)
 
-## Captured evidence
-
-![Linux links user](output/playwright/linux-links-user.png)
-
-![Linux system logs](output/playwright/linux-system-logs.png)
-
-### Actual command output
+## Command output
 
 - [session02 05](output/logs/session02-05.log)

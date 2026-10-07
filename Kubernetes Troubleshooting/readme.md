@@ -1,12 +1,8 @@
 # Kubernetes Troubleshooting
 
-## Execution environment
+## Troubleshooting
 
-Name: Ritesh Prajapati. Fresh evidence was collected on 7 October 2026 from Ubuntu host `devops-ritesh`, reached using `ssh dev.devops-ritesh.riteshprajapati.coder`. Terminal images are Playwright captures of a live browser terminal connected to that SSH host. Browser images show the actual remote services through SSH port forwarding.
-
-## Tasks and implementation
-
-The lab includes the teacher's mini-project and five deliberately broken scenarios. `fixed/` contains the corrected manifests. They run in the `troubleshooting` namespace.
+The five broken scenarios and mini-project run in `troubleshooting`. Corrected manifests are in `fixed/`. All eight Pods ran successfully after the fixes.
 
 | Failure | Investigation | Root cause and correction |
 |---|---|---|
@@ -33,13 +29,13 @@ kubectl explain pod.spec
 kubectl top pods -n troubleshooting
 ```
 
-## Captured evidence
+## Screenshots
 
-![After fixes](output/playwright/after-fixes.png)
+![After fixes](output/screenshots/after-fixes.png)
 
-![Before fixes](output/playwright/before-fixes.png)
+![Before fixes](output/screenshots/before-fixes.png)
 
-### Actual command output
+## Command output
 
 - [after](output/logs/after.log)
 - [before](output/logs/before.log)

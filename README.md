@@ -1,14 +1,10 @@
-# DevOps homework — Ritesh Prajapati
+# DevOps Homework
 
-Course homework for sessions 1–21, with source files, commands, explanations, real terminal output and screenshots. Enrollment number and section are pending student input.
+Name: Ritesh Prajapati
 
-## Assignment sources
+Assignments for sessions 1–21, with commands, results and screenshots.
 
-The teacher's [devops-heros repository](https://github.com/Nency-Ravaliya/devops-heros) was pulled to commit `8376590`. Requirements were checked against the [homework document](https://docs.google.com/document/d/1cjXFYf2Thm8cBEN-0C48B-v02cj3jGLd47lcO18prHE/edit) and the available class transcripts, including the final October 4 lecture.
-
-Each session requires its own README link in the course Google Form. Sessions 1 and 2 share the Linux homework. The final lecture simplifies the session 21 **homework** to running and documenting the provided TaskBoard project. The separate graded capstone requires an original Python application in the assigned domain; the teacher's TaskBoard reference is not an original capstone submission.
-
-## Homework index
+## Assignments
 
 | Session | README to submit |
 |---|---|
@@ -33,29 +29,10 @@ Each session requires its own README link in the course Google Form. Sessions 1 
 | 20 | [Monitoring, Observability & GitOps](Monitoring%2C%20Observability%20%26%20GitOps/readme.md) |
 | 21 | [Final DevOps Project & Troubleshooting](Final%20DevOps%20Project%20%26%20Troubleshooting/readme.md) |
 
-## Evidence and environment
+## Status
 
-Fresh practical work ran on Ubuntu host `devops-ritesh` using:
+Practical work and CI/CD checks are documented in each assignment. AWS deployment and cleanup for sessions 18–19 are pending credentials. The separate original capstone is pending.
 
-```bash
-ssh dev.devops-ritesh.riteshprajapati.coder
-```
+Add the enrollment number in session 7 before submitting.
 
-Playwright captured a live SSH terminal and actual services viewed through SSH port forwarding. Screenshots are embedded in the relevant READMEs under `output/playwright/`; actual command transcripts are under `output/logs/`. The Argo CD reconciliation passed in a GitHub Actions kind cluster after the SSH host experienced API timeouts; both results are documented. Earlier session 11/12 screenshots from the existing repository remain labeled as earlier kind-cluster evidence.
-
-Reproducible execution scripts are in [scripts](scripts/). These scripts create classroom workloads; read each script before running it. Workloads were cleaned up between exercises to fit the SSH host's 929 MiB RAM.
-
-## CI/CD evidence
-
-- [Calculator and TaskBoard test workflow](https://github.com/riteshprajapati381/devops-sst/actions/workflows/homework-ci.yml).
-- [Successful full DevSecOps pipeline](https://github.com/riteshprajapati381/devops-sst/actions/runs/37621662696): tests, Bandit, pip-audit, full-history Gitleaks, Docker build, Trivy security gate, GHCR push and actual kind-cluster deployment with HTTP checks.
-
-## Verified results
-
-The repository includes 72 fresh Playwright screenshots, actual SSH command output, successful CI/DevSecOps runs and a successful Argo CD self-healing run. Calculator tests: 5 passed; Flask tests: 8 passed; TaskBoard API tests: 10 passed. Storage/HPA, troubleshooting and Helm upgrade/rollback were verified on the SSH Minikube cluster. The deployed HTTP load-generator exercise also passed in kind. Terraform initialization and validation passed for both projects.
-
-## Remaining external steps
-
-AWS `apply`, resource verification and `destroy` for sessions 18–19 require credentials for an authorized AWS account. Terraform source and AWS service research are included; actual AWS creation/deletion must not be claimed until executed. The final lecture's Terraform files-only exception was for the original capstone, and does not explicitly waive homework 18–19.
-
-Add your enrollment number to the session 7 README and select the correct course section before submitting the per-session README links. [Section A form](https://forms.gle/ydjAJcwxjpjBXgxB8) / [Section B form](https://forms.gle/pAuXQaokwVzhRzit6). No form has been submitted automatically. The final transcript indicates homework is due Wednesday October 7 and the separate capstone Sunday October 11; confirm the exact deadline in the course portal.
+[Teacher's repository](https://github.com/Nency-Ravaliya/devops-heros) · [Section A submission](https://forms.gle/ydjAJcwxjpjBXgxB8) · [Section B submission](https://forms.gle/pAuXQaokwVzhRzit6)

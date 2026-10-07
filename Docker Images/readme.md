@@ -2,7 +2,7 @@
 
 Name: Ritesh Prajapati
 
-Enrollment number: pending student input
+Enrollment number: ______
 
 ## Multi-stage build
 
@@ -27,12 +27,12 @@ docker rm multi-stage-homework
 
 Node.js, Python and Java applications are available in the Docker Fundamentals folder.
 
-## Captured evidence
+## Screenshots
 
-![Multi stage browser](output/playwright/multi-stage-browser.png)
+![Multi stage browser](output/screenshots/multi-stage-browser.png)
 
-![Multi stage](output/playwright/multi-stage.png)
+![Multi stage](output/screenshots/multi-stage.png)
 
-### Actual command output
+## Command output
 
 - [multi stage](output/logs/multi-stage.log)

@@ -7,7 +7,7 @@ def terminal(folder,name,cmd):
 def browser(folder,name,url):
  subprocess.run([PW,'--session','app','goto',url],check=True,stdout=subprocess.DEVNULL)
  time.sleep(2)
- path=ROOT/folder/'output/playwright'/name;path.parent.mkdir(parents=True,exist_ok=True)
+ path=ROOT/folder/'output/screenshots'/name;path.parent.mkdir(parents=True,exist_ok=True)
  subprocess.run([PW,'--session','app','screenshot','--filename',str(path)],check=True,stdout=subprocess.DEVNULL)
 terminal('Kubernetes Fundamentals','cluster-stopped','minikube stop')
 log='~/devops-sst/"Linux Fundamentals"/output/logs/session02-05.log'
