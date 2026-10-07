@@ -1,0 +1,38 @@
+name: Session 16 CI and Session 21 Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  calculator:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 'CICD & GitHub Actions/demo'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -v
+      - run: bash build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: calculator-build
+          path: 'CICD & GitHub Actions/demo/build'
+  taskboard:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 'Final DevOps Project & Troubleshooting/taskboard/backend'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - run: pytest -v
