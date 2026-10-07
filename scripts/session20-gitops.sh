@@ -3,7 +3,11 @@ set -euxo pipefail
 export PATH="$HOME/.local/bin:$PATH"
 cd "$HOME/devops-sst/Monitoring, Observability & GitOps/gitops"
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
-kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.4/manifests/core-install.yaml
+if test "${ARGO_SKIP_INSTALL:-0}" != 1; then
+ kubectl apply -n argocd --server-side --force-conflicts --request-timeout=120s -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.5.4/manifests/core-install.yaml
+fi
+# This exercise uses one Application, so the optional ApplicationSet controller is unnecessary.
+kubectl scale deployment/argocd-applicationset-controller -n argocd --replicas=0
 kubectl rollout status deployment/argocd-repo-server -n argocd --timeout=300s
 kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=300s
 kubectl apply -f bootstrap/project.yaml -f bootstrap/application.yaml
@@ -23,5 +27,6 @@ for attempt in $(seq 1 40); do
 done
 test "$replicas" = 2
 kubectl get application -n argocd
+kubectl rollout status deployment/session20-mini -n session20 --timeout=180s
 kubectl get deployment/session20-mini -n session20
 kubectl get application/session20-mini -n argocd -o jsonpath='{.status.sync.revision}'
