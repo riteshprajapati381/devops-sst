@@ -1,0 +1,72 @@
++ kind=Apache-app
++ cd '/home/coder/devops-sst/Docker Fundamentals'
++ docker build -t homework-apache-app Apache-app
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  3.072kB
+Step 1/3 : FROM httpd:2.4-alpine
+2.4-alpine: Pulling from library/httpd
+e2de96513ba9: Already exists
+269898e769d0: Pulling fs layer
+3c7c286fbbd5: Pulling fs layer
+4f4fb700ef54: Pulling fs layer
+db577887d90f: Pulling fs layer
+a61ab206ac8a: Pulling fs layer
+8e97dd6176d7: Pulling fs layer
+db577887d90f: Waiting
+a61ab206ac8a: Waiting
+8e97dd6176d7: Waiting
+269898e769d0: Verifying Checksum
+269898e769d0: Download complete
+4f4fb700ef54: Verifying Checksum
+4f4fb700ef54: Download complete
+269898e769d0: Pull complete
+3c7c286fbbd5: Verifying Checksum
+3c7c286fbbd5: Download complete
+3c7c286fbbd5: Pull complete
+4f4fb700ef54: Pull complete
+db577887d90f: Verifying Checksum
+db577887d90f: Download complete
+a61ab206ac8a: Verifying Checksum
+a61ab206ac8a: Download complete
+8e97dd6176d7: Verifying Checksum
+8e97dd6176d7: Download complete
+db577887d90f: Pull complete
+a61ab206ac8a: Pull complete
+8e97dd6176d7: Pull complete
+Digest: sha256:3440c39d8d6f54fa9ad2549e5a60c19ddd435faadc29c1ad28aa795f71888889
+Status: Downloaded newer image for httpd:2.4-alpine
+ ---> 49c4a5d42d02
+Step 2/3 : COPY index.html /usr/local/apache2/htdocs/index.html
+ ---> f18c093c8254
+Step 3/3 : EXPOSE 80
+ ---> Running in f35ec6927840
+ ---> Removed intermediate container f35ec6927840
+ ---> 047cb5b424e7
+Successfully built 047cb5b424e7
+Successfully tagged homework-apache-app:latest
++ docker rm -f homework-app
+homework-app
++ port=80
++ case "$kind" in
++ docker run -d --name homework-app -p 8080:80 homework-apache-app
+d12fb1e885ee3d49e95d51c5898f79b18e0c9e8cbb45be1038327a13d3c491c6
+++ seq 1 30
++ for attempt in $(seq 1 30)
++ curl --max-time 15 -fsS http://localhost:8080
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Apache</title></head><body><h1>Hello World from Apache</h1></body></html>
++ break
++ curl --max-time 15 -fsS http://localhost:8080
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Apache</title></head><body><h1>Hello World from Apache</h1></body></html>
++ docker ps --filter name=homework-app
+CONTAINER ID   IMAGE                 COMMAND              CREATED                  STATUS                  PORTS                                   NAMES
+d12fb1e885ee   homework-apache-app   "httpd-foreground"   Less than a second ago   Up Less than a second   0.0.0.0:8080->80/tcp, :::8080->80/tcp   homework-app
++ docker logs homework-app
+AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
+AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
+[Wed Oct 07 13:12:23.391609 2026] [mpm_event:notice] [pid 1:tid 1] AH00489: Apache/2.4.69 (Unix) configured -- resuming normal operations
+[Wed Oct 07 13:12:23.391939 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'httpd -D FOREGROUND'
+172.17.0.1 - - [07/Oct/2026:13:12:23 +0000] "GET / HTTP/1.1" 200 140
+172.17.0.1 - - [07/Oct/2026:13:12:23 +0000] "GET / HTTP/1.1" 200 140

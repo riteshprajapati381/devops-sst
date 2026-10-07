@@ -97,3 +97,26 @@ POSTGRES_DB     : yatri_production_db
 ## What I understood
 
 ConfigMaps store normal config values. Secrets store sensitive values. Ingress routes HTTP traffic, so `/` goes to the frontend and `/api/` goes to the backend.
+
+## Ingress and its controller
+
+An Ingress is an API resource describing HTTP host/path routing and optional TLS. The Ingress controller is the running implementation that watches those resources and configures a proxy. Creating an Ingress alone does not create a working proxy. Examples of controllers include NGINX, Traefik and AWS Load Balancer Controller. The ingressClassName selects the controller responsible for the resource.
+
+## Troubleshooting routing and configuration
+
+Check `kubectl describe ingress`, controller logs, Service selectors and EndpointSlices before changing the application. An empty EndpointSlice commonly means the Service selector does not match ready Pods. Verify the targetPort matches the container listener and the hostname in the HTTP Host header matches the Ingress. Check `kubectl describe pod` for missing ConfigMap/Secret keys and `kubectl exec` for the injected configuration. The [session 14 Service experiment](../Kubernetes%20Troubleshooting/readme.md) records a deliberate selector failure and its verified repair; the retained browser images above show both Ingress routes on the earlier kind cluster.
+
+Secrets are base64 encoded API objects; that encoding is not encryption. The committed Secret file contains placeholders. Create classroom demo values at runtime and use a secret manager or encrypted secret workflow for real credentials.
+
+## Teacher's Secret newline troubleshooting exercise
+
+The teacher's `troubleshooting/secret-base64-gotcha.md` describes the extra newline encoded by `echo`. The [local troubleshooting notes](troubleshooting/README.md) explain the root cause and fix. The fresh SSH script compares decoded bytes with and without the newline; the before/after evidence is embedded below.
+
+## Captured evidence
+
+![Secret newline](output/playwright/secret-newline.png)
+
+### Actual command output
+
+- [secret localhost trust observation](output/logs/secret-localhost-trust-observation.log)
+- [secret newline](output/logs/secret-newline.log)

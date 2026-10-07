@@ -2,6 +2,7 @@ name: Session 17 DevSecOps Build Scan Push Deploy
 on:
   push:
     branches: [main]
+    paths: [".github/workflows/devsecops.yml", ".gitleaksignore", "Complete CICD & DevSecOps/demo/**"]
   pull_request:
   workflow_dispatch:
 permissions:

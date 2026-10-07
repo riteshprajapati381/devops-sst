@@ -1,0 +1,101 @@
++ kind=java-app
++ cd '/home/coder/devops-sst/Docker Fundamentals'
++ docker build -t homework-java-app java-app
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  3.584kB
+Step 1/9 : FROM eclipse-temurin:25-jdk-alpine AS build
+25-jdk-alpine: Pulling from library/eclipse-temurin
+e2de96513ba9: Already exists
+b91322bf4f7a: Pulling fs layer
+5d1f71485fa1: Pulling fs layer
+3244f132ea3c: Pulling fs layer
+c4848277582c: Pulling fs layer
+c4848277582c: Waiting
+3244f132ea3c: Verifying Checksum
+3244f132ea3c: Download complete
+b91322bf4f7a: Verifying Checksum
+b91322bf4f7a: Download complete
+c4848277582c: Verifying Checksum
+c4848277582c: Download complete
+5d1f71485fa1: Verifying Checksum
+5d1f71485fa1: Download complete
+b91322bf4f7a: Pull complete
+5d1f71485fa1: Pull complete
+3244f132ea3c: Pull complete
+c4848277582c: Pull complete
+Digest: sha256:3fd2d245c4e0eba615fe366a71b8bd25f5db7104f53e4026b24bf508b880bd2a
+Status: Downloaded newer image for eclipse-temurin:25-jdk-alpine
+ ---> 47974c00a215
+Step 2/9 : WORKDIR /src
+ ---> Running in 02ca420ae21f
+ ---> Removed intermediate container 02ca420ae21f
+ ---> 1fa120c34ae6
+Step 3/9 : COPY Main.java .
+ ---> 2b89d25b1f42
+Step 4/9 : RUN javac Main.java
+ ---> Running in d1fde7992f31
+ ---> Removed intermediate container d1fde7992f31
+ ---> 8b4d5cf4484a
+Step 5/9 : FROM eclipse-temurin:25-jre-alpine
+25-jre-alpine: Pulling from library/eclipse-temurin
+e2de96513ba9: Already exists
+f99db5f04f89: Pulling fs layer
+0a766f641652: Pulling fs layer
+5adb22c6bb2b: Pulling fs layer
+d35ca26035cc: Pulling fs layer
+d35ca26035cc: Waiting
+5adb22c6bb2b: Verifying Checksum
+5adb22c6bb2b: Download complete
+f99db5f04f89: Verifying Checksum
+f99db5f04f89: Download complete
+0a766f641652: Verifying Checksum
+0a766f641652: Download complete
+d35ca26035cc: Verifying Checksum
+d35ca26035cc: Download complete
+f99db5f04f89: Pull complete
+0a766f641652: Pull complete
+5adb22c6bb2b: Pull complete
+d35ca26035cc: Pull complete
+Digest: sha256:3c0a9084927a221ccd1d007fcaf614465672c0af37aaa834c5184483afe56d61
+Status: Downloaded newer image for eclipse-temurin:25-jre-alpine
+ ---> b514ae52d20c
+Step 6/9 : WORKDIR /app
+ ---> Running in 433e1c76f64d
+ ---> Removed intermediate container 433e1c76f64d
+ ---> 65a75e1fc06c
+Step 7/9 : COPY --from=build /src/Main.class .
+ ---> 9078f107fd28
+Step 8/9 : EXPOSE 8080
+ ---> Running in 3c61eeac5220
+ ---> Removed intermediate container 3c61eeac5220
+ ---> 46f818fa56fb
+Step 9/9 : CMD ["java", "Main"]
+ ---> Running in ff3b08f65f58
+ ---> Removed intermediate container ff3b08f65f58
+ ---> 9d4b8893dfde
+Successfully built 9d4b8893dfde
+Successfully tagged homework-java-app:latest
++ docker rm -f homework-app
+homework-app
++ port=80
++ case "$kind" in
++ port=8080
++ docker run -d --name homework-app -p 8080:8080 homework-java-app
+bb21d91a79bbdf65beb4b8e7e790c65625dfc676b1e35ddeba8073a9e6b3f492
+++ seq 1 30
++ for attempt in $(seq 1 30)
++ curl --max-time 15 -fsS http://localhost:8080
+curl: (52) Empty reply from server
++ sleep 2
++ for attempt in $(seq 1 30)
++ curl --max-time 15 -fsS http://localhost:8080
+<h1>Hello World from Java</h1>+ break
++ curl --max-time 15 -fsS http://localhost:8080
+<h1>Hello World from Java</h1>+ docker ps --filter name=homework-app
+CONTAINER ID   IMAGE               COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+bb21d91a79bb   homework-java-app   "/__cacert_entrypoin…"   2 seconds ago   Up 2 seconds   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp   homework-app
++ docker logs homework-app
+Listening on 8080

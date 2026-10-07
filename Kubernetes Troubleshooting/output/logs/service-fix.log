@@ -1,0 +1,39 @@
++ export PATH=/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
++ PATH=/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
++ kubectl patch svc troubleshooting-service -n troubleshooting --type=merge -p '{"spec":{"selector":{"app":"wrong-label"}}}'
+service/troubleshooting-service patched
+++ seq 1 30
++ for attempt in $(seq 1 30)
+++ kubectl get endpointslices -n troubleshooting -l kubernetes.io/service-name=troubleshooting-service -o 'jsonpath={.items[*].endpoints[*].addresses[*]}'
++ addresses='10.244.0.18 10.244.0.12'
++ test -z '10.244.0.18 10.244.0.12'
++ sleep 2
++ for attempt in $(seq 1 30)
+++ kubectl get endpointslices -n troubleshooting -l kubernetes.io/service-name=troubleshooting-service -o 'jsonpath={.items[*].endpoints[*].addresses[*]}'
++ addresses=
++ test -z ''
++ break
++ kubectl get endpoints troubleshooting-service -n troubleshooting
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                      ENDPOINTS   AGE
+troubleshooting-service   <none>      4m1s
++ kubectl patch svc troubleshooting-service -n troubleshooting --type=merge -p '{"spec":{"selector":{"app":"troubleshooting-app"}}}'
+service/troubleshooting-service patched
+++ seq 1 30
++ for attempt in $(seq 1 30)
+++ kubectl get endpointslices -n troubleshooting -l kubernetes.io/service-name=troubleshooting-service -o 'jsonpath={.items[*].endpoints[*].addresses[*]}'
++ addresses='10.244.0.12 10.244.0.18'
++ test -n '10.244.0.12 10.244.0.18'
++ break
++ kubectl get endpoints troubleshooting-service -n troubleshooting
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME                      ENDPOINTS                       AGE
+troubleshooting-service   10.244.0.12:80,10.244.0.18:80   4m2s
++ head -6
++ kubectl exec -n troubleshooting fail-4-dns-failure-pod -- wget -qO- http://troubleshooting-service
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }

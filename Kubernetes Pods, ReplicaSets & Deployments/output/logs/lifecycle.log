@@ -1,0 +1,847 @@
++ export PATH=/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
++ PATH=/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
++ cd '/home/coder/devops-sst/Kubernetes Pods, ReplicaSets & Deployments'
++ kubectl apply -f -
++ kubectl create namespace lifecycle --dry-run=client -o yaml
+namespace/lifecycle created
++ kubectl apply -n lifecycle -f pod-lifecycle/
+pod/lifecycle-running created
+pod/lifecycle-pending created
+pod/lifecycle-succeeded created
+pod/lifecycle-failed created
+pod/lifecycle-crashloop created
+pod/lifecycle-image-error created
+pod/lifecycle-readiness created
+pod/lifecycle-liveness created
+pod/lifecycle-startup created
+pod/lifecycle-init created
+pod/lifecycle-multi-container created
+pod/lifecycle-termination created
++ sleep 40
++ kubectl get pods -n lifecycle -o wide
+NAME                        READY   STATUS             RESTARTS      AGE   IP            NODE       NOMINATED NODE   READINESS GATES
+lifecycle-crashloop         0/1     CrashLoopBackOff   2 (18s ago)   67s   10.244.0.74   minikube   <none>           <none>
+lifecycle-failed            0/1     Error              0             68s   10.244.0.72   minikube   <none>           <none>
+lifecycle-image-error       0/1     ErrImagePull       0             66s   10.244.0.77   minikube   <none>           <none>
+lifecycle-init              1/1     Running            0             57s   10.244.0.80   minikube   <none>           <none>
+lifecycle-liveness          1/1     Running            0             64s   10.244.0.76   minikube   <none>           <none>
+lifecycle-multi-container   2/2     Running            0             56s   10.244.0.81   minikube   <none>           <none>
+lifecycle-pending           0/1     Pending            0             69s   <none>        <none>     <none>           <none>
+lifecycle-readiness         1/1     Running            0             65s   10.244.0.78   minikube   <none>           <none>
+lifecycle-running           1/1     Running            0             69s   10.244.0.75   minikube   <none>           <none>
+lifecycle-startup           1/1     Running            0             62s   10.244.0.79   minikube   <none>           <none>
+lifecycle-succeeded         0/1     Completed          0             68s   10.244.0.73   minikube   <none>           <none>
+lifecycle-termination       1/1     Running            0             45s   10.244.0.82   minikube   <none>           <none>
+++ kubectl get pods -n lifecycle -o name
++ for pod in $(kubectl get pods -n lifecycle -o name)
++ kubectl describe -n lifecycle pod/lifecycle-crashloop
+Name:             lifecycle-crashloop
+Namespace:        lifecycle
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Wed, 07 Oct 2026 12:56:52 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.74
+IPs:
+  IP:  10.244.0.74
+Containers:
+  crashing-app:
+    Container ID:  docker://43f03129c1f9b230a9b869d7e82a5285b03db8224c4de35ea2e81c23b0458d04
+    Image:         busybox:1.36
+    Image ID:      docker-pullable://busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      echo 'Application started'; sleep 3; echo 'Application crashed'; exit 1
+    State:          Waiting
+      Reason:       CrashLoopBackOff
+    Last State:     Terminated
+      Reason:       Error
+      Exit Code:    1
+      Started:      Wed, 07 Oct 2026 12:57:36 +0000
+      Finished:     Wed, 07 Oct 2026 12:57:40 +0000
+    Ready:          False
+    Restart Count:  2
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-9fw9s (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-9fw9s:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  67s                default-scheduler  Successfully assigned lifecycle/lifecycle-crashloop to minikube
+  Normal   Pulled     24s (x3 over 58s)  kubelet            Container image "busybox:1.36" already present on machine
+  Normal   Created    23s (x3 over 58s)  kubelet            Created container: crashing-app
+  Normal   Started    22s (x3 over 54s)  kubelet            Started container crashing-app
+  Warning  BackOff    5s (x4 over 40s)   kubelet            Back-off restarting failed container crashing-app in pod lifecycle-crashloop_lifecycle(71a1a8db-107d-435d-9559-99bc1005726f)
++ kubectl logs -n lifecycle pod/lifecycle-crashloop --all-containers=true --tail=8
+Application started
+Application crashed
++ for pod in $(kubectl get pods -n lifecycle -o name)
++ kubectl describe -n lifecycle pod/lifecycle-failed
+Name:             lifecycle-failed
+Namespace:        lifecycle
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Wed, 07 Oct 2026 12:56:51 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Failed
+IP:               10.244.0.72
+IPs:
+  IP:  10.244.0.72
+Containers:
+  task:
+    Container ID:  docker://dd3e4b3955b6b6ea2df206aa9ddc23bbc10596ea1fda4cb45e55e6c905e03a75
+    Image:         busybox:1.36
+    Image ID:      docker-pullable://busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      echo 'Task started'; sleep 5; echo 'Task failed'; exit 1
+    State:          Terminated
+      Reason:       Error
+      Exit Code:    1
+      Started:      Wed, 07 Oct 2026 12:57:03 +0000
+      Finished:     Wed, 07 Oct 2026 12:57:09 +0000
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-mjlnr (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-mjlnr:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  69s   default-scheduler  Successfully assigned lifecycle/lifecycle-failed to minikube
+  Normal  Pulled     59s   kubelet            Container image "busybox:1.36" already present on machine
+  Normal  Created    59s   kubelet            Created container: task
+  Normal  Started    55s   kubelet            Started container task
++ kubectl logs -n lifecycle pod/lifecycle-failed --all-containers=true --tail=8
+Task started
+Task failed
++ for pod in $(kubectl get pods -n lifecycle -o name)
++ kubectl describe -n lifecycle pod/lifecycle-image-error
+Name:             lifecycle-image-error
+Namespace:        lifecycle
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Wed, 07 Oct 2026 12:56:56 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Pending
+IP:               10.244.0.77
+IPs:
+  IP:  10.244.0.77
+Containers:
+  broken-image:
+    Container ID:   
+    Image:          jakwehrgkaejw:kahsdfgkhj
+    Image ID:       
+    Port:           <none>
+    Host Port:      <none>
+    State:          Waiting
+      Reason:       ErrImagePull
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-jswtz (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-jswtz:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  67s                default-scheduler  Successfully assigned lifecycle/lifecycle-image-error to minikube
+  Normal   Pulling    29s (x2 over 59s)  kubelet            Pulling image "jakwehrgkaejw:kahsdfgkhj"
+  Warning  Failed     23s (x2 over 52s)  kubelet            Failed to pull image "jakwehrgkaejw:kahsdfgkhj": Error response from daemon: pull access denied for jakwehrgkaejw, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+  Warning  Failed     23s (x2 over 52s)  kubelet            Error: ErrImagePull
+  Normal   BackOff    10s (x2 over 43s)  kubelet            Back-off pulling image "jakwehrgkaejw:kahsdfgkhj"
+  Warning  Failed     10s (x2 over 43s)  kubelet            Error: ImagePullBackOff
++ kubectl logs -n lifecycle pod/lifecycle-image-error --all-containers=true --tail=8
+Error from server (BadRequest): container "broken-image" in pod "lifecycle-image-error" is waiting to start: image can't be pulled
++ true
++ for pod in $(kubectl get pods -n lifecycle -o name)
++ kubectl describe -n lifecycle pod/lifecycle-init
+Name:             lifecycle-init
+Namespace:        lifecycle
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Wed, 07 Oct 2026 12:57:02 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.80
+IPs:
+  IP:  10.244.0.80
+Init Containers:
+  setup:
+    Container ID:  docker://6f34d25eba7c26dace5858293a8a42df5dced2e59f9f86b5590a9ec577b7e5b5
+    Image:         busybox:1.36
+    Image ID:      docker-pullable://busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      echo 'Init container running'; sleep 10; echo 'Init complete'
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Wed, 07 Oct 2026 12:57:06 +0000
+      Finished:     Wed, 07 Oct 2026 12:57:17 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-fpxrz (ro)
+Containers:
+  app:
+    Container ID:   docker://765d360f89e7848e250b8cc812915705a7b8d41d403523b9fe9c32b03a445fb5
+    Image:          nginx:1.27
+    Image ID:       docker-pullable://nginx@sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Wed, 07 Oct 2026 12:57:20 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-fpxrz (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-fpxrz:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  58s   default-scheduler  Successfully assigned lifecycle/lifecycle-init to minikube
+  Normal  Pulled     54s   kubelet            Container image "busybox:1.36" already present on machine
+  Normal  Created    54s   kubelet            Created container: setup
+  Normal  Started    53s   kubelet            Started container setup
+  Normal  Pulled     41s   kubelet            Container image "nginx:1.27" already present on machine
+  Normal  Created    40s   kubelet            Created container: app
+  Normal  Started    40s   kubelet            Started container app
++ kubectl logs -n lifecycle pod/lifecycle-init --all-containers=true --tail=8
+Init container running
+Init complete
+2026/10/07 12:57:21 [notice] 1#1: using the "epoll" event method
+2026/10/07 12:57:21 [notice] 1#1: nginx/1.27.5
+2026/10/07 12:57:21 [notice] 1#1: built by gcc 12.2.0 (Debian 12.2.0-14) 
+2026/10/07 12:57:21 [notice] 1#1: OS: Linux 5.15.0-1084-aws
+2026/10/07 12:57:21 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2026/10/07 12:57:21 [notice] 1#1: start worker processes
+2026/10/07 12:57:21 [notice] 1#1: start worker process 29
+2026/10/07 12:57:21 [notice] 1#1: start worker process 30
++ for pod in $(kubectl get pods -n lifecycle -o name)
++ kubectl describe -n lifecycle pod/lifecycle-liveness
+Name:             lifecycle-liveness
+Namespace:        lifecycle
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Wed, 07 Oct 2026 12:56:56 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.76
+IPs:
+  IP:  10.244.0.76
+Containers:
+  app:
+    Container ID:  docker://0bf3cd6329e3c778ba064c55efd7c332244a5053d2baab63b8e7ce9bff16bf5d
+    Image:         busybox:1.36
+    Image ID:      docker-pullable://busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      echo 'App started'; touch /tmp/healthy; sleep 20; rm /tmp/healthy; echo 'Health file removed'; sleep 300
+    State:          Running
+      Started:      Wed, 07 Oct 2026 12:57:03 +0000
+    Ready:          True
+    Restart Count:  0
+    Liveness:       exec [sh -c test -f /tmp/healthy] delay=5s timeout=1s period=5s #success=1 #failure=2
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-kv89v (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-kv89v:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  66s                default-scheduler  Successfully assigned lifecycle/lifecycle-liveness to minikube
+  Normal   Pulled     60s                kubelet            Container image "busybox:1.36" already present on machine
+  Normal   Created    60s                kubelet            Created container: app
+  Normal   Started    57s                kubelet            Started container app
+  Warning  Unhealthy  51s                kubelet            Liveness probe failed: command timed out: "sh -c test -f /tmp/healthy" timed out after 1s
+  Warning  Unhealthy  27s (x2 over 32s)  kubelet            Liveness probe failed:
+  Normal   Killing    27s                kubelet            Container app failed liveness probe, will be restarted
++ kubectl logs -n lifecycle pod/lifecycle-liveness --all-containers=true --tail=8
+App started
+Health file removed
++ for pod in $(kubectl get pods -n lifecycle -o name)
++ kubectl describe -n lifecycle pod/lifecycle-multi-container
+Name:             lifecycle-multi-container
+Namespace:        lifecycle
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Wed, 07 Oct 2026 12:57:08 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.81
+IPs:
+  IP:  10.244.0.81
+Containers:
+  app:
+    Container ID:   docker://db54069cca2498ec4086fede2306ed88531d23c17ccc291c0518038c570f822d
+    Image:          nginx:1.27
+    Image ID:       docker-pullable://nginx@sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Wed, 07 Oct 2026 12:57:21 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-9sh94 (ro)
+  sidecar:
+    Container ID:  docker://d0528cc39046e920f2e1bf614202d0a83974f248cdf63aa24d00724d878283da
+    Image:         busybox:1.36
+    Image ID:      docker-pullable://busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      while true; do echo 'Sidecar is running'; sleep 10; done
+    State:          Running
+      Started:      Wed, 07 Oct 2026 12:57:22 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-9sh94 (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-9sh94:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  54s   default-scheduler  Successfully assigned lifecycle/lifecycle-multi-container to minikube
+  Normal  Pulled     40s   kubelet            Container image "nginx:1.27" already present on machine
+  Normal  Created    40s   kubelet            Created container: app
+  Normal  Started    39s   kubelet            Started container app
+  Normal  Pulled     39s   kubelet            Container image "busybox:1.36" already present on machine
+  Normal  Created    39s   kubelet            Created container: sidecar
+  Normal  Started    38s   kubelet            Started container sidecar
++ kubectl logs -n lifecycle pod/lifecycle-multi-container --all-containers=true --tail=8
+2026/10/07 12:57:22 [notice] 1#1: using the "epoll" event method
+2026/10/07 12:57:22 [notice] 1#1: nginx/1.27.5
+2026/10/07 12:57:22 [notice] 1#1: built by gcc 12.2.0 (Debian 12.2.0-14) 
+2026/10/07 12:57:22 [notice] 1#1: OS: Linux 5.15.0-1084-aws
+2026/10/07 12:57:22 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2026/10/07 12:57:22 [notice] 1#1: start worker processes
+2026/10/07 12:57:22 [notice] 1#1: start worker process 30
+2026/10/07 12:57:22 [notice] 1#1: start worker process 31
+Sidecar is running
+Sidecar is running
+Sidecar is running
+Sidecar is running
++ for pod in $(kubectl get pods -n lifecycle -o name)
++ kubectl describe -n lifecycle pod/lifecycle-pending
+Name:             lifecycle-pending
+Namespace:        lifecycle
+Priority:         0
+Service Account:  default
+Node:             <none>
+Labels:           <none>
+Annotations:      <none>
+Status:           Pending
+IP:               
+IPs:              <none>
+Containers:
+  impossible-resource:
+    Image:      nginx:1.27
+    Port:       <none>
+    Host Port:  <none>
+    Requests:
+      cpu:        1
+      memory:     9Gi
+    Environment:  <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-l67t2 (ro)
+Conditions:
+  Type           Status
+  PodScheduled   False 
+Volumes:
+  kube-api-access-l67t2:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age                From               Message
+  ----     ------            ----               ----               -------
+  Warning  FailedScheduling  22s (x3 over 73s)  default-scheduler  0/1 nodes are available: 1 Insufficient memory. no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
++ kubectl logs -n lifecycle pod/lifecycle-pending --all-containers=true --tail=8
++ for pod in $(kubectl get pods -n lifecycle -o name)
++ kubectl describe -n lifecycle pod/lifecycle-readiness
+Name:             lifecycle-readiness
+Namespace:        lifecycle
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Wed, 07 Oct 2026 12:56:56 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.78
+IPs:
+  IP:  10.244.0.78
+Containers:
+  nginx:
+    Container ID:   docker://3cca035c41076c3abc04597eeb607879f8377f00cdfdd481308796c9680fcfc1
+    Image:          nginx:1.27
+    Image ID:       docker-pullable://nginx@sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d
+    Port:           <none>
+    Host Port:      <none>
+    State:          Running
+      Started:      Wed, 07 Oct 2026 12:57:04 +0000
+    Ready:          True
+    Restart Count:  0
+    Readiness:      http-get http://:80/ delay=5s timeout=1s period=5s #success=1 #failure=3
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-fx4cv (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-fx4cv:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  69s   default-scheduler  Successfully assigned lifecycle/lifecycle-readiness to minikube
+  Normal  Pulled     60s   kubelet            Container image "nginx:1.27" already present on machine
+  Normal  Created    59s   kubelet            Created container: nginx
+  Normal  Started    58s   kubelet            Started container nginx
++ kubectl logs -n lifecycle pod/lifecycle-readiness --all-containers=true --tail=8
+10.244.0.1 - - [07/Oct/2026:12:57:25 +0000] "GET / HTTP/1.1" 200 615 "-" "kube-probe/1.34" "-"
+10.244.0.1 - - [07/Oct/2026:12:57:30 +0000] "GET / HTTP/1.1" 200 615 "-" "kube-probe/1.34" "-"
+10.244.0.1 - - [07/Oct/2026:12:57:35 +0000] "GET / HTTP/1.1" 200 615 "-" "kube-probe/1.34" "-"
+10.244.0.1 - - [07/Oct/2026:12:57:40 +0000] "GET / HTTP/1.1" 200 615 "-" "kube-probe/1.34" "-"
+10.244.0.1 - - [07/Oct/2026:12:57:45 +0000] "GET / HTTP/1.1" 200 615 "-" "kube-probe/1.34" "-"
+10.244.0.1 - - [07/Oct/2026:12:57:50 +0000] "GET / HTTP/1.1" 200 615 "-" "kube-probe/1.34" "-"
+10.244.0.1 - - [07/Oct/2026:12:57:55 +0000] "GET / HTTP/1.1" 200 615 "-" "kube-probe/1.34" "-"
+10.244.0.1 - - [07/Oct/2026:12:58:00 +0000] "GET / HTTP/1.1" 200 615 "-" "kube-probe/1.34" "-"
++ for pod in $(kubectl get pods -n lifecycle -o name)
++ kubectl describe -n lifecycle pod/lifecycle-running
+Name:             lifecycle-running
+Namespace:        lifecycle
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Wed, 07 Oct 2026 12:56:50 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.75
+IPs:
+  IP:  10.244.0.75
+Containers:
+  nginx:
+    Container ID:   docker://9be2f687fd91ee8ef546a92fdcdab9df26bfae12357d5a5ae83339579f51489b
+    Image:          nginx:1.27
+    Image ID:       docker-pullable://nginx@sha256:6784fb0834aa7dbbe12e3d7471e69c290df3e6ba810dc38b34ae33d3c1c05f7d
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Wed, 07 Oct 2026 12:57:03 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-mrrst (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-mrrst:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  73s   default-scheduler  Successfully assigned lifecycle/lifecycle-running to minikube
+  Normal  Pulled     62s   kubelet            Container image "nginx:1.27" already present on machine
+  Normal  Created    62s   kubelet            Created container: nginx
+  Normal  Started    58s   kubelet            Started container nginx
++ kubectl logs -n lifecycle pod/lifecycle-running --all-containers=true --tail=8
+2026/10/07 12:57:05 [notice] 1#1: using the "epoll" event method
+2026/10/07 12:57:05 [notice] 1#1: nginx/1.27.5
+2026/10/07 12:57:05 [notice] 1#1: built by gcc 12.2.0 (Debian 12.2.0-14) 
+2026/10/07 12:57:05 [notice] 1#1: OS: Linux 5.15.0-1084-aws
+2026/10/07 12:57:05 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2026/10/07 12:57:05 [notice] 1#1: start worker processes
+2026/10/07 12:57:05 [notice] 1#1: start worker process 29
+2026/10/07 12:57:05 [notice] 1#1: start worker process 30
++ for pod in $(kubectl get pods -n lifecycle -o name)
++ kubectl describe -n lifecycle pod/lifecycle-startup
+Name:             lifecycle-startup
+Namespace:        lifecycle
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Wed, 07 Oct 2026 12:56:59 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.79
+IPs:
+  IP:  10.244.0.79
+Containers:
+  slow-app:
+    Container ID:  docker://33b65e40256a0cae52d4a2f73f0bf9db33efcaa6d915d91423e0e15fad265255
+    Image:         busybox:1.36
+    Image ID:      docker-pullable://busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      echo 'Application starting...'; sleep 30; touch /tmp/started; echo 'Application started'; sleep 300
+    State:          Running
+      Started:      Wed, 07 Oct 2026 12:57:06 +0000
+    Ready:          True
+    Restart Count:  0
+    Startup:        exec [sh -c test -f /tmp/started] delay=0s timeout=1s period=5s #success=1 #failure=10
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-ssd6h (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-ssd6h:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  65s                default-scheduler  Successfully assigned lifecycle/lifecycle-startup to minikube
+  Normal   Pulled     57s                kubelet            Container image "busybox:1.36" already present on machine
+  Normal   Created    57s                kubelet            Created container: slow-app
+  Normal   Started    56s                kubelet            Started container slow-app
+  Warning  Unhealthy  36s                kubelet            Startup probe failed: command timed out: "sh -c test -f /tmp/started" timed out after 1s
+  Warning  Unhealthy  27s (x5 over 51s)  kubelet            Startup probe failed:
++ kubectl logs -n lifecycle pod/lifecycle-startup --all-containers=true --tail=8
+Application starting...
+Application started
++ for pod in $(kubectl get pods -n lifecycle -o name)
++ kubectl describe -n lifecycle pod/lifecycle-succeeded
+Name:             lifecycle-succeeded
+Namespace:        lifecycle
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Wed, 07 Oct 2026 12:56:50 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Succeeded
+IP:               10.244.0.73
+IPs:
+  IP:  10.244.0.73
+Containers:
+  task:
+    Container ID:  docker://c3208b2b0143720a14d49c4e5a065ed71a87a9cb29c6e98f6cbb5cacbde208f0
+    Image:         busybox:1.36
+    Image ID:      docker-pullable://busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      echo 'Task started'; sleep 5; echo 'Task completed successfully'; exit 0
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Wed, 07 Oct 2026 12:57:03 +0000
+      Finished:     Wed, 07 Oct 2026 12:57:09 +0000
+    Ready:          False
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-m7t9x (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   False 
+  Initialized                 True 
+  Ready                       False 
+  ContainersReady             False 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-m7t9x:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  74s   default-scheduler  Successfully assigned lifecycle/lifecycle-succeeded to minikube
+  Normal  Pulled     63s   kubelet            Container image "busybox:1.36" already present on machine
+  Normal  Created    63s   kubelet            Created container: task
+  Normal  Started    60s   kubelet            Started container task
++ kubectl logs -n lifecycle pod/lifecycle-succeeded --all-containers=true --tail=8
+Task started
+Task completed successfully
++ for pod in $(kubectl get pods -n lifecycle -o name)
++ kubectl describe -n lifecycle pod/lifecycle-termination
+Name:             lifecycle-termination
+Namespace:        lifecycle
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.49.2
+Start Time:       Wed, 07 Oct 2026 12:57:19 +0000
+Labels:           <none>
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.82
+IPs:
+  IP:  10.244.0.82
+Containers:
+  graceful-app:
+    Container ID:  docker://def57c862f2d76ac4980192638f0c6ea164c6bb89a5bdbc9e7da8d592da2a000
+    Image:         busybox:1.36
+    Image ID:      docker-pullable://busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      sh
+      -c
+      trap 'echo "SIGTERM received; cleaning up..."; sleep 10; echo "Cleanup complete"; exit 0' TERM
+      echo "Application running"
+      while true; do sleep 2; done
+      
+    State:          Running
+      Started:      Wed, 07 Oct 2026 12:57:24 +0000
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-k8h9j (ro)
+Conditions:
+  Type                        Status
+  PodReadyToStartContainers   True 
+  Initialized                 True 
+  Ready                       True 
+  ContainersReady             True 
+  PodScheduled                True 
+Volumes:
+  kube-api-access-k8h9j:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  47s   default-scheduler  Successfully assigned lifecycle/lifecycle-termination to minikube
+  Normal  Pulled     41s   kubelet            Container image "busybox:1.36" already present on machine
+  Normal  Created    40s   kubelet            Created container: graceful-app
+  Normal  Started    40s   kubelet            Started container graceful-app
++ kubectl logs -n lifecycle pod/lifecycle-termination --all-containers=true --tail=8
+Application running
++ kubectl get events -n lifecycle --sort-by=.lastTimestamp
++ tail -30
+58s         Normal    Started            pod/lifecycle-startup           Started container slow-app
+58s         Normal    Scheduled          pod/lifecycle-multi-container   Successfully assigned lifecycle/lifecycle-multi-container to minikube
+55s         Warning   Unhealthy          pod/lifecycle-liveness          Liveness probe failed: command timed out: "sh -c test -f /tmp/healthy" timed out after 1s
+48s         Normal    Scheduled          pod/lifecycle-termination       Successfully assigned lifecycle/lifecycle-termination to minikube
+46s         Normal    Pulled             pod/lifecycle-init              Container image "nginx:1.27" already present on machine
+45s         Normal    Created            pod/lifecycle-init              Created container: app
+45s         Normal    Started            pod/lifecycle-init              Started container app
+44s         Normal    Pulled             pod/lifecycle-multi-container   Container image "nginx:1.27" already present on machine
+44s         Normal    Created            pod/lifecycle-multi-container   Created container: app
+43s         Normal    Started            pod/lifecycle-multi-container   Started container app
+43s         Normal    Pulled             pod/lifecycle-multi-container   Container image "busybox:1.36" already present on machine
+43s         Normal    Created            pod/lifecycle-multi-container   Created container: sidecar
+42s         Normal    Pulled             pod/lifecycle-termination       Container image "busybox:1.36" already present on machine
+42s         Normal    Started            pod/lifecycle-multi-container   Started container sidecar
+41s         Normal    Created            pod/lifecycle-termination       Created container: graceful-app
+41s         Normal    Started            pod/lifecycle-termination       Started container graceful-app
+38s         Warning   Unhealthy          pod/lifecycle-startup           Startup probe failed: command timed out: "sh -c test -f /tmp/started" timed out after 1s
+31s         Warning   Unhealthy          pod/lifecycle-liveness          Liveness probe failed:
+31s         Normal    Killing            pod/lifecycle-liveness          Container app failed liveness probe, will be restarted
+30s         Normal    Pulled             pod/lifecycle-crashloop         Container image "busybox:1.36" already present on machine
+29s         Warning   Unhealthy          pod/lifecycle-startup           Startup probe failed:
+29s         Normal    Created            pod/lifecycle-crashloop         Created container: crashing-app
+28s         Warning   Failed             pod/lifecycle-image-error       Error: ErrImagePull
+28s         Warning   Failed             pod/lifecycle-image-error       Failed to pull image "jakwehrgkaejw:kahsdfgkhj": Error response from daemon: pull access denied for jakwehrgkaejw, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
+28s         Normal    Started            pod/lifecycle-crashloop         Started container crashing-app
+25s         Warning   FailedScheduling   pod/lifecycle-pending           0/1 nodes are available: 1 Insufficient memory. no new claims to deallocate, preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
+15s         Warning   Failed             pod/lifecycle-image-error       Error: ImagePullBackOff
+15s         Normal    BackOff            pod/lifecycle-image-error       Back-off pulling image "jakwehrgkaejw:kahsdfgkhj"
+11s         Warning   BackOff            pod/lifecycle-crashloop         Back-off restarting failed container crashing-app in pod lifecycle-crashloop_lifecycle(71a1a8db-107d-435d-9559-99bc1005726f)
+1s          Normal    Pulling            pod/lifecycle-image-error       Pulling image "jakwehrgkaejw:kahsdfgkhj"

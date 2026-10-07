@@ -1,0 +1,56 @@
++ cd '/home/coder/devops-sst/Docker Images/multi-stage-app'
++ docker rm -f homework-app
+homework-app
++ docker build -t multi-stage-homework .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  4.096kB
+Step 1/10 : FROM node:24-alpine AS build
+ ---> c10884952bb8
+Step 2/10 : WORKDIR /build
+ ---> Running in 9a2e6b983586
+ ---> Removed intermediate container 9a2e6b983586
+ ---> b98f81211e6c
+Step 3/10 : COPY package.json server.js ./
+ ---> 674827dc3b00
+Step 4/10 : RUN mkdir /output && cp package.json server.js /output/
+ ---> Running in ecf6c24e3cc8
+ ---> Removed intermediate container ecf6c24e3cc8
+ ---> 2934f0b6cdd4
+Step 5/10 : FROM node:24-alpine AS runtime
+ ---> c10884952bb8
+Step 6/10 : WORKDIR /app
+ ---> Using cache
+ ---> ff5590356108
+Step 7/10 : COPY --from=build /output/ ./
+ ---> 81757cec10bf
+Step 8/10 : USER node
+ ---> Running in 7fd6188b298a
+ ---> Removed intermediate container 7fd6188b298a
+ ---> f29a21b0456a
+Step 9/10 : EXPOSE 8080
+ ---> Running in e16c23bfbc0f
+ ---> Removed intermediate container e16c23bfbc0f
+ ---> 79001bd9bb6d
+Step 10/10 : CMD ["npm", "start"]
+ ---> Running in 94cbc180e1ce
+ ---> Removed intermediate container 94cbc180e1ce
+ ---> 1d54cd2d87ab
+Successfully built 1d54cd2d87ab
+Successfully tagged multi-stage-homework:latest
++ docker run -d --name homework-app -p 8080:8080 multi-stage-homework
+c998e5851475cb9ecbe897e34d1b2f896c2b6a3d75e18349d8ea7d5ddcc17024
+++ seq 1 20
++ for attempt in $(seq 1 20)
++ curl --max-time 15 -fsS http://localhost:8080
+curl: (52) Empty reply from server
++ sleep 2
++ for attempt in $(seq 1 20)
++ curl --max-time 15 -fsS http://localhost:8080
+<h1>Hello World from Docker multi-stage build</h1>+ break
++ curl --max-time 15 -fsS http://localhost:8080
+<h1>Hello World from Docker multi-stage build</h1>+ docker ps --filter name=homework-app
+CONTAINER ID   IMAGE                  COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+c998e5851475   multi-stage-homework   "docker-entrypoint.s…"   3 seconds ago   Up 2 seconds   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp   homework-app

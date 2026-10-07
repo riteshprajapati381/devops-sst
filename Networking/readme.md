@@ -54,3 +54,26 @@ alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
 
 ```
 
+
+## Fresh SSH command explanations
+
+| Command | What it shows |
+|---|---|
+| ip -brief addr | Interface addresses and status. |
+| ip route | Routing table and default gateway. |
+| ss -lnt | Listening TCP ports. |
+| ping -c 2 example.com | ICMP reachability and round-trip time; blocked ICMP does not imply HTTP failure. |
+| dig / nslookup example.com | DNS resolution and returned records. |
+| curl -I https://example.com | HTTP response headers; the fresh run returned HTTP/2 200. |
+
+The raw combined run and fresh terminal screenshots are linked below. Earlier examples above ran on the previous host.
+
+## Captured evidence
+
+![Dns http](output/playwright/dns-http.png)
+
+![Interfaces routing](output/playwright/interfaces-routing.png)
+
+### Actual command output
+
+- [session02 05](output/logs/session02-05.log)

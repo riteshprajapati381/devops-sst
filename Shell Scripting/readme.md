@@ -27,3 +27,11 @@ Enter you name : Ritesh
 ```
 
 The process output is saved in system-info/processes.txt.
+
+## Captured evidence
+
+![System info script](output/playwright/system-info-script.png)
+
+### Actual command output
+
+- [session02 05](output/logs/session02-05.log)

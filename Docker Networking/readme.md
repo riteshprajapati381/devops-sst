@@ -46,3 +46,22 @@ It is mainly used with Docker Swarm for multi-host communication.
 ```bash
 docker network create --driver overlay --attachable app-overlay
 ```
+
+## Network isolation and overlay notes
+
+The frontend joins frontend-net. The backend joins frontend-net and backend-net. MySQL joins backend-net and isolated-net. The frontend can reach the backend, the backend can reach MySQL, and the frontend cannot resolve or reach MySQL because they share no network. Docker's embedded DNS provides service/container name lookup within shared user-defined networks.
+
+An overlay network uses VXLAN to carry container traffic between hosts. Swarm manages membership and service discovery; standalone containers require an attachable overlay. Hosts need TCP 2377 for Swarm control, TCP/UDP 7946 for node discovery and UDP 4789 for overlay data traffic. An encrypted overlay can protect data-plane traffic with IPsec, at a performance cost. This is useful for distributed services across multiple machines; the homework's multi-host overlay portion is research, so no multi-host execution is claimed.
+
+Run `docker swarm init` on a manager before creating a Swarm overlay; join other nodes using the generated join command. The live three-network exercise here uses local bridge networks.
+
+## Captured evidence
+
+![Network volume browser](output/playwright/network-volume-browser.png)
+
+![Network volume](output/playwright/network-volume.png)
+
+### Actual command output
+
+- [network volume first attempt](output/logs/network-volume-first-attempt.log)
+- [network volume](output/logs/network-volume.log)

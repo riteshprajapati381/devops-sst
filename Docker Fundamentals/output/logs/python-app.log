@@ -1,0 +1,63 @@
++ kind=python-app
++ cd '/home/coder/devops-sst/Docker Fundamentals'
++ docker build -t homework-python-app python-app
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  3.072kB
+Step 1/5 : FROM python:3.14-alpine
+3.14-alpine: Pulling from library/python
+e2de96513ba9: Already exists
+48f6a2588427: Pulling fs layer
+2a22c5887fa2: Pulling fs layer
+d486488257d0: Pulling fs layer
+d486488257d0: Download complete
+48f6a2588427: Verifying Checksum
+48f6a2588427: Download complete
+2a22c5887fa2: Verifying Checksum
+2a22c5887fa2: Download complete
+48f6a2588427: Pull complete
+2a22c5887fa2: Pull complete
+d486488257d0: Pull complete
+Digest: sha256:f6a589d43c42b9e7f7dc67a12d37132491f362859a5d750607710cc56da3bc72
+Status: Downloaded newer image for python:3.14-alpine
+ ---> 5e80f9e3093d
+Step 2/5 : WORKDIR /app
+ ---> Running in 0332328598ba
+ ---> Removed intermediate container 0332328598ba
+ ---> 73af0d8cf487
+Step 3/5 : COPY app.py .
+ ---> 6335f9d1ee6f
+Step 4/5 : EXPOSE 8000
+ ---> Running in 72bd99e61fa0
+ ---> Removed intermediate container 72bd99e61fa0
+ ---> 433d4a71c1d5
+Step 5/5 : CMD ["python", "app.py"]
+ ---> Running in 6d7a2908804f
+ ---> Removed intermediate container 6d7a2908804f
+ ---> 008d5445e34c
+Successfully built 008d5445e34c
+Successfully tagged homework-python-app:latest
++ docker rm -f homework-app
+homework-app
++ port=80
++ case "$kind" in
++ port=8000
++ docker run -d --name homework-app -p 8080:8000 homework-python-app
+4b34fa33a86f6efaa4bdf75f12890f2cde7c59831b3388bcf63e6be77be65d53
+++ seq 1 30
++ for attempt in $(seq 1 30)
++ curl --max-time 15 -fsS http://localhost:8080
+curl: (56) Recv failure: Connection reset by peer
++ sleep 2
++ for attempt in $(seq 1 30)
++ curl --max-time 15 -fsS http://localhost:8080
+<h1>Hello World from Python</h1>+ break
++ curl --max-time 15 -fsS http://localhost:8080
+<h1>Hello World from Python</h1>+ docker ps --filter name=homework-app
+CONTAINER ID   IMAGE                 COMMAND           CREATED         STATUS         PORTS                                       NAMES
+4b34fa33a86f   homework-python-app   "python app.py"   2 seconds ago   Up 2 seconds   0.0.0.0:8080->8000/tcp, :::8080->8000/tcp   homework-app
++ docker logs homework-app
+172.17.0.1 - - [07/Oct/2026 13:11:42] "GET / HTTP/1.1" 200 -
+172.17.0.1 - - [07/Oct/2026 13:11:42] "GET / HTTP/1.1" 200 -

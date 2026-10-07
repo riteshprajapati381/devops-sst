@@ -1,0 +1,26 @@
++ export PATH=/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
++ PATH=/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
++ minikube status
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
++ kubectl cluster-info
+Kubernetes control plane is running at https://192.168.49.2:8443
+CoreDNS is running at https://192.168.49.2:8443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
++ kubectl get nodes -o wide
+NAME       STATUS   ROLES           AGE   VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION    CONTAINER-RUNTIME
+minikube   Ready    control-plane   39m   v1.34.1   192.168.49.2   <none>        Ubuntu 22.04.5 LTS   5.15.0-1084-aws   docker://28.4.0
++ kubectl apply -f '/home/coder/devops-sst/Kubernetes Fundamentals/hello.yml'
+pod/hello-pod created
++ sleep 8
++ kubectl get pods
+NAME        READY   STATUS      RESTARTS   AGE
+hello-pod   0/1     Completed   0          9s
++ kubectl logs hello-pod
+Hello Kubernetes

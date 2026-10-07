@@ -1,0 +1,19 @@
++ export PATH=/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
++ PATH=/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/home/coder/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
++ cd '/home/coder/devops-sst/Monitoring, Observability & GitOps/gitops'
++ kubectl create namespace argocd --dry-run=client -o yaml
++ kubectl apply -f -
+namespace/argocd unchanged
++ test 1 '!=' 1
++ kubectl scale deployment/argocd-applicationset-controller -n argocd --replicas=0
+deployment.apps/argocd-applicationset-controller scaled
++ kubectl rollout status deployment/argocd-repo-server -n argocd --timeout=300s
+deployment "argocd-repo-server" successfully rolled out
++ kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=300s
+Waiting for 1 pods to be ready...
+partitioned roll out complete: 1 new pods have been updated...
++ kubectl apply -f bootstrap/project.yaml -f bootstrap/application.yaml
+resource mapping not found for name: "default" namespace: "argocd" from "bootstrap/project.yaml": no matches for kind "AppProject" in version "argoproj.io/v1alpha1"
+ensure CRDs are installed first
+resource mapping not found for name: "session20-mini" namespace: "argocd" from "bootstrap/application.yaml": no matches for kind "Application" in version "argoproj.io/v1alpha1"
+ensure CRDs are installed first

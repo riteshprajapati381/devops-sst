@@ -1,0 +1,21 @@
+{
+    "status": "success",
+    "data": {
+        "alerts": [
+            {
+                "labels": {
+                    "alertname": "ExporterDown",
+                    "instance": "node-exporter:9100",
+                    "job": "node-exporter",
+                    "severity": "warning"
+                },
+                "annotations": {
+                    "summary": "Node Exporter is unavailable"
+                },
+                "state": "firing",
+                "activeAt": "2026-10-07T13:23:41.455244941Z",
+                "value": "0e+00"
+            }
+        ]
+    }
+}

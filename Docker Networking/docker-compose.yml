@@ -13,9 +13,10 @@ services:
   database:
     image: mysql:8.4
     container_name: homework-database
+    command: ["--performance-schema=OFF", "--innodb-buffer-pool-size=64M", "--max-connections=20"]
     environment:
-      MYSQL_ROOT_PASSWORD: homework-password
-    networks: [backend-net]
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-demo-local-only}
+    networks: [backend-net, isolated-net]
 
 networks:
   frontend-net:

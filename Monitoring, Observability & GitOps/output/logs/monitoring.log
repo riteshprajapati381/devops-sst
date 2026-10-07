@@ -1,0 +1,123 @@
++ cd '/home/coder/devops-sst/Monitoring, Observability & GitOps/monitoring'
++ docker compose up -d
+ Container monitoring-node-exporter-1  Running
+ Container monitoring-prometheus-1  Running
+ Container monitoring-grafana-1  Running
+++ seq 1 30
++ for attempt in $(seq 1 30)
++ curl --max-time 10 -fsS http://localhost:9090/-/ready
+Prometheus Server is Ready.
++ break
++ curl --max-time 15 -fsS http://localhost:9090/-/ready
+Prometheus Server is Ready.
++ docker compose ps
+NAME                         IMAGE                       COMMAND                  SERVICE         CREATED              STATUS          PORTS
+monitoring-grafana-1         grafana/grafana:12.1.1      "/run.sh"                grafana         About a minute ago   Up 59 seconds   127.0.0.1:3001->3000/tcp
+monitoring-node-exporter-1   prom/node-exporter:v1.9.1   "/bin/node_exporter …"   node-exporter   About a minute ago   Up 59 seconds   9100/tcp
+monitoring-prometheus-1      prom/prometheus:v3.5.0      "/bin/prometheus --c…"   prometheus      About a minute ago   Up 59 seconds   127.0.0.1:9090->9090/tcp
++ curl --max-time 15 -fsS http://localhost:9090/api/v1/targets
++ python3 -m json.tool
+{
+    "status": "success",
+    "data": {
+        "activeTargets": [
+            {
+                "discoveredLabels": {
+                    "__address__": "node-exporter:9100",
+                    "__metrics_path__": "/metrics",
+                    "__scheme__": "http",
+                    "__scrape_interval__": "5s",
+                    "__scrape_timeout__": "5s",
+                    "job": "node-exporter"
+                },
+                "labels": {
+                    "instance": "node-exporter:9100",
+                    "job": "node-exporter"
+                },
+                "scrapePool": "node-exporter",
+                "scrapeUrl": "http://node-exporter:9100/metrics",
+                "globalUrl": "http://node-exporter:9100/metrics",
+                "lastError": "",
+                "lastScrape": "2026-10-07T13:19:46.781574468Z",
+                "lastScrapeDuration": 0.012405158,
+                "health": "up",
+                "scrapeInterval": "5s",
+                "scrapeTimeout": "5s"
+            },
+            {
+                "discoveredLabels": {
+                    "__address__": "prometheus:9090",
+                    "__metrics_path__": "/metrics",
+                    "__scheme__": "http",
+                    "__scrape_interval__": "5s",
+                    "__scrape_timeout__": "5s",
+                    "job": "prometheus"
+                },
+                "labels": {
+                    "instance": "prometheus:9090",
+                    "job": "prometheus"
+                },
+                "scrapePool": "prometheus",
+                "scrapeUrl": "http://prometheus:9090/metrics",
+                "globalUrl": "http://prometheus:9090/metrics",
+                "lastError": "",
+                "lastScrape": "2026-10-07T13:19:50.655900899Z",
+                "lastScrapeDuration": 0.005942987,
+                "health": "up",
+                "scrapeInterval": "5s",
+                "scrapeTimeout": "5s"
+            }
+        ],
+        "droppedTargets": [],
+        "droppedTargetCounts": {
+            "node-exporter": 0,
+            "prometheus": 0
+        }
+    }
+}
++ curl --max-time 15 -fsSG http://localhost:9090/api/v1/query --data-urlencode query=up
++ python3 -m json.tool
+{
+    "status": "success",
+    "data": {
+        "resultType": "vector",
+        "result": [
+            {
+                "metric": {
+                    "__name__": "up",
+                    "instance": "prometheus:9090",
+                    "job": "prometheus"
+                },
+                "value": [
+                    1791379191.31,
+                    "1"
+                ]
+            },
+            {
+                "metric": {
+                    "__name__": "up",
+                    "instance": "node-exporter:9100",
+                    "job": "node-exporter"
+                },
+                "value": [
+                    1791379191.31,
+                    "1"
+                ]
+            }
+        ]
+    }
+}
+++ seq 1 30
++ for attempt in $(seq 1 30)
++ curl --max-time 10 -fsS http://localhost:3001/api/health
+{
+  "database": "ok",
+  "version": "12.1.1",
+  "commit": "df5de8219b41d1e639e003bf5f3a85913761d167"
+}+ break
++ curl --max-time 15 -fsS http://localhost:3001/api/health
+{
+  "database": "ok",
+  "version": "12.1.1",
+  "commit": "df5de8219b41d1e639e003bf5f3a85913761d167"
+}

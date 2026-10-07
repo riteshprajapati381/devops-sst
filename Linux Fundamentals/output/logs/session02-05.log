@@ -1,0 +1,251 @@
++ cd '/home/coder/devops-sst/Linux Fundamentals'
++ mkdir -p link-demo
++ cd link-demo
++ printf 'Linux link exercise\n'
++ ln -f original.txt hard-link.txt
++ ln -sfn original.txt soft-link.txt
++ ls -li original.txt hard-link.txt soft-link.txt
+2322534 -rw-rw-r-- 2 coder coder 20 Oct  7 12:58 hard-link.txt
+2322534 -rw-rw-r-- 2 coder coder 20 Oct  7 12:58 original.txt
+2322514 lrwxrwxrwx 1 coder coder 12 Oct  7 12:58 soft-link.txt -> original.txt
++ rm original.txt
++ cat hard-link.txt
+Linux link exercise
++ cat soft-link.txt
+cat: soft-link.txt: No such file or directory
++ echo 'Soft link is broken after deleting original'
+Soft link is broken after deleting original
++ id devops-student
++ id devops-student
+uid=1001(devops-student) gid=1001(devops-student) groups=1001(devops-student)
++ getent passwd devops-student
+devops-student:x:1001:1001:DevOps homework test user,,,:/home/devops-student:/bin/bash
++ sudo journalctl -u docker -n 10 --no-pager
+-- Logs begin at Wed 2026-10-07 12:06:27 UTC, end at Wed 2026-10-07 12:58:14 UTC. --
+Oct 07 12:27:55 devops-ritesh dockerd[3942]: time="2026-10-07T12:27:54.966133348Z" level=info msg="ignoring event" container=d493f180950827d26f7fe6b872d499cb0fe5d7666ec0581f6b7f252f178f7d16 module=libcontainerd namespace=moby topic=/tasks/delete type="*events.TaskDelete"
+Oct 07 12:28:00 devops-ritesh dockerd[3942]: time="2026-10-07T12:28:00.882247819Z" level=error msg="Handler for GET /v1.45/info returned error: write unix /run/docker.sock->@: write: broken pipe" spanID=9292e2c35d8727f3 traceID=41f8e697d46565adcc4a3cfdbb47e591
+Oct 07 12:28:00 devops-ritesh dockerd[3942]: 2026/10/07 12:28:00 http: superfluous response.WriteHeader call from go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp.(*respWriterWrapper).WriteHeader (wrap.go:98)
+Oct 07 12:28:04 devops-ritesh dockerd[3942]: time="2026-10-07T12:28:04.773451177Z" level=info msg="No non-localhost DNS nameservers are left in resolv.conf. Using default external servers"
+Oct 07 12:28:54 devops-ritesh dockerd[3942]: time="2026-10-07T12:28:54.421789048Z" level=info msg="ignoring event" container=fb216f46c324324594e1334c9fc4cc62a5623361f42a3d62a088a38e9dae0290 module=libcontainerd namespace=moby topic=/tasks/delete type="*events.TaskDelete"
+Oct 07 12:28:54 devops-ritesh dockerd[3942]: time="2026-10-07T12:28:54.513171928Z" level=info msg="ignoring event" container=70158b1815e7c25fab71385f170cda96972312b20efc33470b45f4917ee83d9b module=libcontainerd namespace=moby topic=/tasks/delete type="*events.TaskDelete"
+Oct 07 12:28:58 devops-ritesh dockerd[3942]: time="2026-10-07T12:28:58.207157879Z" level=info msg="Container failed to exit within 10s of signal 15 - using the force" container=1764e04e58c7348a1be0dd8b7d8f2593d35103501d77a686ea3c1fe5fa0b6e0a spanID=f50ad799ad21974a traceID=b8c6f4f02cfd69835aea3e5845cc269e
+Oct 07 12:28:58 devops-ritesh dockerd[3942]: time="2026-10-07T12:28:58.152107746Z" level=info msg="Container failed to exit within 10s of signal 3 - using the force" container=fb216f46c324324594e1334c9fc4cc62a5623361f42a3d62a088a38e9dae0290 spanID=126562330d044b71 traceID=e30f105ebbe2353d6b9bdc151c2440fe
+Oct 07 12:28:58 devops-ritesh dockerd[3942]: time="2026-10-07T12:28:58.199759289Z" level=info msg="Container failed to exit within 10s of signal 2 - using the force" container=70158b1815e7c25fab71385f170cda96972312b20efc33470b45f4917ee83d9b spanID=2308079b4955cd9b traceID=b2737315c6fb154214d8be21ebe5d8c2
+Oct 07 12:29:02 devops-ritesh dockerd[3942]: time="2026-10-07T12:29:02.929875823Z" level=info msg="ignoring event" container=1764e04e58c7348a1be0dd8b7d8f2593d35103501d77a686ea3c1fe5fa0b6e0a module=libcontainerd namespace=moby topic=/tasks/delete type="*events.TaskDelete"
++ whoami
+coder
++ hostname
+devops-ritesh
++ pwd
+/home/coder/devops-sst/Linux Fundamentals/link-demo
++ ls -la
+total 12
+drwxrwxr-x 2 coder coder 4096 Oct  7 12:58 .
+drwxr-xr-x 5 coder coder 4096 Oct  7 12:42 ..
+-rw-rw-r-- 1 coder coder   20 Oct  7 12:58 hard-link.txt
+lrwxrwxrwx 1 coder coder   12 Oct  7 12:58 soft-link.txt -> original.txt
++ cat hard-link.txt
+Linux link exercise
++ df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root       993G   13G  980G   2% /
++ free -h
+              total        used        free      shared  buff/cache   available
+Mem:          929Mi       490Mi        81Mi       1.0Mi       357Mi       271Mi
+Swap:         3.0Gi       772Mi       2.2Gi
++ ps -ef
++ sed -n 1,12p
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 12:06 ?        00:00:07 /sbin/init
+root           2       0  0 12:06 ?        00:00:00 [kthreadd]
+root           3       2  0 12:06 ?        00:00:00 [rcu_gp]
+root           4       2  0 12:06 ?        00:00:00 [rcu_par_gp]
+root           5       2  0 12:06 ?        00:00:00 [slub_flushwq]
+root           6       2  0 12:06 ?        00:00:00 [netns]
+root           8       2  0 12:06 ?        00:00:00 [kworker/0:0H-events_highpri]
+root           9       2  0 12:06 ?        00:00:02 [kworker/u4:0-events_unbound]
+root          10       2  0 12:06 ?        00:00:00 [mm_percpu_wq]
+root          11       2  0 12:06 ?        00:00:00 [rcu_tasks_rude_]
+root          12       2  0 12:06 ?        00:00:00 [rcu_tasks_trace]
++ cd '/home/coder/devops-sst/Shell Scripting'
++ printf 'Ritesh\n'
++ bash shell_script.sh
+Current date: Wed Oct  7 12:58:14 UTC 2026
+Hostname: devops-ritesh
+Username: coder
+Disk usage:
+Filesystem       Size  Used Avail Use% Mounted on
+/dev/root        993G   13G  980G   2% /
+devtmpfs         455M     0  455M   0% /dev
+tmpfs            465M     0  465M   0% /dev/shm
+tmpfs             93M  964K   92M   2% /run
+tmpfs            5.0M     0  5.0M   0% /run/lock
+tmpfs            465M     0  465M   0% /sys/fs/cgroup
+/dev/loop0        28M   28M     0 100% /snap/amazon-ssm-agent/11320
+/dev/loop1        64M   64M     0 100% /snap/core20/2599
+/dev/loop3        92M   92M     0 100% /snap/lxd/32662
+/dev/loop2        74M   74M     0 100% /snap/core22/2010
+/dev/loop4        51M   51M     0 100% /snap/snapd/24671
+/dev/nvme0n1p15  105M  6.1M   99M   6% /boot/efi
+Running processes:
+    PID TTY          TIME CMD
+   1318 ?        00:00:27 coder
+   1506 ?        00:00:00 MainThread
+   1532 ?        00:00:04 MainThread
+  20374 ?        00:00:11 metrics-server
+  52989 ?        00:00:00 bash
+  52993 ?        00:00:00 bash
+  53015 ?        00:00:00 bash
+  53020 ?        00:00:00 ps
+Hello, Ritesh
+Full process list saved to system-info/processes.txt
++ cd /home/coder/devops-sst/Networking
++ ip -brief addr
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+ens5             UP             172.31.0.104/20 metric 100 fe80::8ff:c5ff:fe37:eb3d/64 
+docker0          DOWN           172.17.0.1/16 fe80::42:76ff:fe2d:d609/64 
+br-c9fc0339c20c  UP             192.168.49.1/24 fe80::42:7ff:fe53:6b2f/64 
+vethb4638d8@if13 UP             fe80::78d1:83ff:fe37:55a/64 
+br-14dc7fe8dbb3  DOWN           172.18.0.1/16 fe80::42:aeff:fede:8fb8/64 
++ ip route
+default via 172.31.0.1 dev ens5 proto dhcp src 172.31.0.104 metric 100 
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
+172.18.0.0/16 dev br-14dc7fe8dbb3 proto kernel scope link src 172.18.0.1 linkdown 
+172.31.0.0/20 dev ens5 proto kernel scope link src 172.31.0.104 metric 100 
+172.31.0.1 dev ens5 proto dhcp scope link src 172.31.0.104 metric 100 
+192.168.49.0/24 dev br-c9fc0339c20c proto kernel scope link src 192.168.49.1 
++ ss -lnt
+State   Recv-Q   Send-Q     Local Address:Port      Peer Address:Port  Process  
+LISTEN  0        4096           127.0.0.1:6060           0.0.0.0:*              
+LISTEN  0        4096       127.0.0.53%lo:53             0.0.0.0:*              
+LISTEN  0        128              0.0.0.0:22             0.0.0.0:*              
+LISTEN  0        4096           127.0.0.1:37029          0.0.0.0:*              
+LISTEN  0        4096           127.0.0.1:2113           0.0.0.0:*              
+LISTEN  0        4096           127.0.0.1:2112           0.0.0.0:*              
+LISTEN  0        511            127.0.0.1:13337          0.0.0.0:*              
+LISTEN  0        4096           127.0.0.1:32769          0.0.0.0:*              
+LISTEN  0        4096           127.0.0.1:32768          0.0.0.0:*              
+LISTEN  0        4096           127.0.0.1:32771          0.0.0.0:*              
+LISTEN  0        4096           127.0.0.1:32770          0.0.0.0:*              
+LISTEN  0        4096           127.0.0.1:32772          0.0.0.0:*              
+LISTEN  0        128                 [::]:22                [::]:*              
++ ping -c 2 example.com
+PING example.com (104.20.23.154) 56(84) bytes of data.
+64 bytes from 104.20.23.154 (104.20.23.154): icmp_seq=1 ttl=57 time=0.671 ms
+64 bytes from 104.20.23.154 (104.20.23.154): icmp_seq=2 ttl=57 time=0.748 ms
+
+--- example.com ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+rtt min/avg/max/mdev = 0.671/0.709/0.748/0.038 ms
++ dig example.com
+
+; <<>> DiG 9.18.30-0ubuntu0.20.04.2-Ubuntu <<>> example.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 52555
+;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 65494
+;; QUESTION SECTION:
+;example.com.			IN	A
+
+;; ANSWER SECTION:
+example.com.		208	IN	A	172.66.147.243
+example.com.		208	IN	A	104.20.23.154
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.53#53(127.0.0.53) (UDP)
+;; WHEN: Wed Oct 07 12:58:16 UTC 2026
+;; MSG SIZE  rcvd: 72
+
++ nslookup example.com
+Server:		127.0.0.53
+Address:	127.0.0.53#53
+
+Non-authoritative answer:
+Name:	example.com
+Address: 172.66.147.243
+Name:	example.com
+Address: 104.20.23.154
+Name:	example.com
+Address: 2606:4700:10::6814:179a
+Name:	example.com
+Address: 2606:4700:10::ac42:93f3
+
++ curl --max-time 15 -I https://example.com
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+HTTP/2 200 
+date: Wed, 07 Oct 2026 12:58:16 GMT
+content-type: text/html; charset=utf-8
+server: cloudflare
+last-modified: Sun, 04 Oct 2026 20:44:03 GMT
+allow: GET, HEAD
+accept-ranges: bytes
+age: 2764
+cf-cache-status: HIT
+cf-ray: a46d138b88473e2e-BOM
+alt-svc: h3=":443"; ma=86400
+
++ cd '/home/coder/devops-sst/Git and GitHub'
++ mkdir -p git-demo
++ cd git-demo
++ git init
+Initialized empty Git repository in /home/coder/devops-sst/Git and GitHub/git-demo/.git/
++ git checkout -b main
+Switched to a new branch 'main'
++ git config user.name 'Ritesh Prajapati'
++ git config user.email prajapatiritesh381@gmail.com
++ printf 'version one\n'
++ git add tracked.txt
++ git commit -m 'Create tracked example file'
+[main (root-commit) 820368a] Create tracked example file
+ 1 file changed, 1 insertion(+)
+ create mode 100644 tracked.txt
++ printf 'version two\n'
++ printf 'untracked file\n'
++ git commit -a -m 'Automatically stage changes to tracked file'
+[main e1d0d9e] Automatically stage changes to tracked file
+ 1 file changed, 1 insertion(+), 1 deletion(-)
++ git status --short
+?? untracked.txt
++ git add untracked.txt
++ git commit -m 'Explicitly add the untracked file'
+[main 79b7934] Explicitly add the untracked file
+ 1 file changed, 1 insertion(+)
+ create mode 100644 untracked.txt
++ git switch -c feature
+Switched to a new branch 'feature'
++ printf 'Selected feature change\n'
++ git add selected.txt
++ git commit -m 'Add feature selected for cherry-pick'
+[feature 8d11ffb] Add feature selected for cherry-pick
+ 1 file changed, 1 insertion(+)
+ create mode 100644 selected.txt
+++ git rev-parse HEAD
++ selected_commit=8d11ffbdb9ec409e61e26a934df0897132f9e60c
++ printf 'Other feature change\n'
++ git add other.txt
++ git commit -m 'Add a separate feature change'
+[feature b87ae67] Add a separate feature change
+ 1 file changed, 1 insertion(+)
+ create mode 100644 other.txt
++ git switch main
+Switched to branch 'main'
++ git cherry-pick 8d11ffbdb9ec409e61e26a934df0897132f9e60c
+[main 8d11ffb] Add feature selected for cherry-pick
+ Date: Wed Oct 7 12:58:16 2026 +0000
+ 1 file changed, 1 insertion(+)
+ create mode 100644 selected.txt
++ git log --oneline --all --graph
+* b87ae67 Add a separate feature change
+* 8d11ffb Add feature selected for cherry-pick
+* 79b7934 Explicitly add the untracked file
+* e1d0d9e Automatically stage changes to tracked file
+* 820368a Create tracked example file
++ cat selected.txt
+Selected feature change
++ test '!' -f other.txt
++ git status --short

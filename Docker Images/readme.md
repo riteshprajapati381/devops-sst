@@ -1,6 +1,8 @@
 # Docker Images
 
-Enrollment number:
+Name: Ritesh Prajapati
+
+Enrollment number: pending student input
 
 ## Multi-stage build
 
@@ -24,3 +26,13 @@ docker rm multi-stage-homework
 ```
 
 Node.js, Python and Java applications are available in the Docker Fundamentals folder.
+
+## Captured evidence
+
+![Multi stage browser](output/playwright/multi-stage-browser.png)
+
+![Multi stage](output/playwright/multi-stage.png)
+
+### Actual command output
+
+- [multi stage](output/logs/multi-stage.log)

@@ -72,3 +72,17 @@ Address: 10.244.0.25
 ## What I understood
 
 Services give pods stable networking. ClusterIP is internal, NodePort exposes a node port, LoadBalancer is used in cloud setups, ExternalName maps to DNS, and Headless Service returns pod IPs.
+
+## Kubernetes object comparisons
+
+| Object | Responsibility and use case | Scaling, identity and storage |
+|---|---|---|
+| Deployment | Manages ReplicaSets and rolling updates for stateless applications. | Desired replica count; interchangeable Pods, typically using Services and external/shared storage. |
+| ReplicaSet | Maintains the requested number of matching Pods. | Replica count only; a Deployment normally manages it and orchestrates version rollouts. |
+| DaemonSet | Runs an agent on each eligible node, such as a log collector. | Scales with eligible nodes, rather than a fixed replica count; often uses node-local storage. |
+| StatefulSet | Manages workloads needing stable identity and persistent storage. | Ordered Pod names; headless Service identity; individual PVCs from volumeClaimTemplates. |
+| Service | Provides discovery and stable networking to selected ready Pods. | Does not create, restart or scale Pods. A ReplicaSet keeps Pods alive; a Service routes traffic to them. |
+
+Deployment and ReplicaSet are related through ownership: Deployment -> ReplicaSet -> Pod. Service selectors connect Service traffic to Pod labels independently of that ownership.
+
+See [FQDN](fqdn/README.md) and [CoreDNS](coredns/README.md) for the remaining research tasks.

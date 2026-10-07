@@ -1,0 +1,192 @@
++ cd '/home/coder/devops-sst/Docker Networking'
++ docker rm -f homework-app
++ docker compose up -d
+ Container homework-frontend  Starting
+ Container homework-backend  Starting
+ Container homework-database  Starting
+ Container homework-frontend  Started
+ Container homework-database  Started
+ Container homework-backend  Started
+++ seq 1 30
++ for attempt in $(seq 1 30)
++ docker exec homework-database mysqladmin ping -uroot -pdemo-local-only
+mysqladmin: [Warning] Using a password on the command line interface can be insecure.
+mysqladmin: connect to server at 'localhost' failed
+error: 'Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2)'
+Check that mysqld is running and that the socket: '/var/run/mysqld/mysqld.sock' exists!
++ sleep 2
++ for attempt in $(seq 1 30)
++ docker exec homework-database mysqladmin ping -uroot -pdemo-local-only
+mysqladmin: [Warning] Using a password on the command line interface can be insecure.
+mysqld is alive
++ break
++ docker network ls
+NETWORK ID     NAME                            DRIVER    SCOPE
+79c27641c1f4   bridge                          bridge    local
+6c0497a61653   dockernetworking_backend-net    bridge    local
+664badff5c96   dockernetworking_frontend-net   bridge    local
+1f96cfad56a2   dockernetworking_isolated-net   bridge    local
+248ba3bf4f5e   host                            host      local
+c9fc0339c20c   minikube                        bridge    local
+9dc60c22925a   none                            null      local
+14dc7fe8dbb3   taskboard_default               bridge    local
++ docker inspect homework-backend --format '{{json .NetworkSettings.Networks}}'
+{"dockernetworking_backend-net":{"IPAMConfig":null,"Links":null,"Aliases":["homework-backend","backend"],"MacAddress":"02:42:ac:14:00:02","NetworkID":"6c0497a6165318771ebb9466e9d9f81a5413cff11d64c83e7d78a2e3951fe755","EndpointID":"1604aea375749d241d2806f70fcf910b1c6300bd3b2dd752dfe5b69041629706","Gateway":"172.20.0.1","IPAddress":"172.20.0.2","IPPrefixLen":16,"IPv6Gateway":"","GlobalIPv6Address":"","GlobalIPv6PrefixLen":0,"DriverOpts":null,"DNSNames":["homework-backend","backend","f8a9d5d26589"]},"dockernetworking_frontend-net":{"IPAMConfig":null,"Links":null,"Aliases":["homework-backend","backend"],"MacAddress":"02:42:ac:13:00:03","NetworkID":"664badff5c961ca8c72f74a2dee26d5a40ca42d5bdd829ed3d5188e96670b58c","EndpointID":"a73363a5199354ab61f389733eaa0581d31f6d811bc6955d29856a16dabed799","Gateway":"172.19.0.1","IPAddress":"172.19.0.3","IPPrefixLen":16,"IPv6Gateway":"","GlobalIPv6Address":"","GlobalIPv6PrefixLen":0,"DriverOpts":null,"DNSNames":["homework-backend","backend","f8a9d5d26589"]}}
++ docker exec homework-frontend ping -c 2 homework-backend
+PING homework-backend (172.19.0.3): 56 data bytes
+64 bytes from 172.19.0.3: seq=0 ttl=64 time=0.207 ms
+64 bytes from 172.19.0.3: seq=1 ttl=64 time=0.076 ms
+
+--- homework-backend ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.076/0.141/0.207 ms
++ docker exec homework-backend ping -c 2 homework-database
+PING homework-database (172.20.0.3): 56 data bytes
+64 bytes from 172.20.0.3: seq=0 ttl=64 time=0.358 ms
+64 bytes from 172.20.0.3: seq=1 ttl=64 time=0.082 ms
+
+--- homework-database ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.082/0.220/0.358 ms
++ docker exec homework-frontend ping -c 1 homework-database
+ping: bad address 'homework-database'
++ echo 'Frontend-to-database isolation verified'
+Frontend-to-database isolation verified
++ docker compose ps
+NAME                IMAGE               COMMAND                  SERVICE    CREATED              STATUS         PORTS
+homework-backend    alpine:3.22         "sh -c 'sleep infini…"   backend    About a minute ago   Up 9 seconds   
+homework-database   mysql:8.4           "docker-entrypoint.s…"   database   About a minute ago   Up 9 seconds   3306/tcp, 33060/tcp
+homework-frontend   nginx:1.29-alpine   "/docker-entrypoint.…"   frontend   About a minute ago   Up 9 seconds   80/tcp
++ docker compose stop
+ Container homework-backend  Stopping
+ Container homework-database  Stopping
+ Container homework-frontend  Stopping
+ Container homework-frontend  Stopped
+ Container homework-database  Stopped
+ Container homework-backend  Stopped
++ docker run -d --name homework-apache --network host httpd:2.4-alpine
+779ebe64a37e102525e0bc7048c5b076cc4ebe662ed49349c1ce3a3b816eb2e7
+++ seq 1 20
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>It works! Apache httpd</title>
+</head>
+<body>
+<p>It works!</p>
+</body>
+</html>
++ break
++ curl --max-time 15 -fsS http://localhost:80
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>It works! Apache httpd</title>
+</head>
+<body>
+<p>It works!</p>
+</body>
+</html>
++ docker ps --filter name=homework-apache
+CONTAINER ID   IMAGE              COMMAND              CREATED         STATUS        PORTS     NAMES
+779ebe64a37e   httpd:2.4-alpine   "httpd-foreground"   2 seconds ago   Up 1 second             homework-apache
++ docker rm -f homework-apache
+homework-apache
+++ pwd
++ docker run -d --name homework-bind -p 8080:80 --mount 'type=bind,source=/home/coder/devops-sst/Docker Networking/bind-mount,target=/usr/share/nginx/html' nginx:1.29-alpine
+1ad098876401db3543d93545f4f233f4c179fd6d71b68ff5c03b7d7467a499af
+++ seq 1 20
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ for attempt in $(seq 1 20)
++ curl --max-time 10 -fsS http://localhost:80
+curl: (7) Failed to connect to localhost port 80: Connection refused
++ sleep 1
++ curl --max-time 15 -fsS http://localhost:8080
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Bind mount</title></head><body><h1>Hello students</h1></body></html>
++ printf '<h1>Hello students — live bind mount update</h1>\n'
++ curl --max-time 15 -fsS http://localhost:8080
+<h1>Hello students — live bind mount update</h1>
++ docker ps --filter name=homework-bind
+CONTAINER ID   IMAGE               COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+1ad098876401   nginx:1.29-alpine   "/docker-entrypoint.…"   20 seconds ago   Up 20 seconds   0.0.0.0:8080->80/tcp, :::8080->80/tcp   homework-bind

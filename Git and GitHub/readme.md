@@ -1,3 +1,7 @@
+# Git and GitHub
+
+The following examples are retained from the earlier homework. Fresh October 7 output is linked below.
+
 in git commit -a -m "" the if there is some files which are already tracked and have some changes or deleted then those files are stagged automativally using -a while without it we need to add it using **git add filename**
 ```bash
 coder@ritesh-aws:~/devops-assignment$ ls -a
@@ -93,3 +97,19 @@ selected feature
 ```
 
 The selected commit is now available in main branch.
+
+## Fresh SSH verification
+
+The new run created three main-branch commits and two feature commits. `git commit -a` committed the modified tracked file while leaving `untracked.txt` untracked; an explicit `git add` then included it. Cherry-picking the selected feature commit brought `selected.txt` to main, and `test ! -f other.txt` verified that the other feature change was absent.
+
+Run [session02-05.sh](../scripts/session02-05.sh); the Ubuntu Git version uses `git init` followed by `git checkout -b main` because it predates `git init -b`.
+
+## Captured evidence
+
+![Cherry pick](output/playwright/cherry-pick.png)
+
+![Tracked untracked](output/playwright/tracked-untracked.png)
+
+### Actual command output
+
+- [session02 05](output/logs/session02-05.log)
