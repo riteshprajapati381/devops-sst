@@ -17,6 +17,7 @@ jobs:
           kubectl patch deployment metrics-server -n kube-system --type=json -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
           kubectl rollout status deployment/metrics-server -n kube-system --timeout=180s
           cd 'Kubernetes Storage, HPA & Probes'
+          kubectl apply -f mini-project/namespace.yaml
           kubectl apply -f mini-project/
           kubectl rollout status deployment/web-app -n production-webapp --timeout=180s
           kubectl wait --for=condition=Ready pod/load-generator -n production-webapp --timeout=120s
